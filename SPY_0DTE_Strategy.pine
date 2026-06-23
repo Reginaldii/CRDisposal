@@ -2,13 +2,13 @@
 // © tradeDash
 
 //@version=5
-strategy("SPY 0DTE Credit Spread — Backtest", shorttitle="SPY 0DTE BT",
+strategy("SPY 0DTE Credit Spread - Backtest", shorttitle="SPY 0DTE BT",
          overlay=true, default_qty_type=strategy.fixed, default_qty_value=1,
          initial_capital=25000, commission_type=strategy.commission.cash_per_contract,
          commission_value=0.65, max_bars_back=500)
 
 // ─────────────────────────────────────────
-//  INPUTS — GENERAL
+//  INPUTS - GENERAL
 // ─────────────────────────────────────────
 orbMinutes  = input.int(30,   "ORB Window (minutes)", minval=5,   maxval=60,  group="Settings")
 srStrength  = input.int(2,    "S/R Pivot Strength",   minval=1,   maxval=5,   group="Settings")
@@ -17,15 +17,15 @@ volLength   = input.int(20,   "Volume MA Length",                             gr
 zoneSize    = input.float(0.5,"S/R Zone Width ($)",   minval=0.1, step=0.1,  group="Settings")
 
 // ─────────────────────────────────────────
-//  INPUTS — SPREAD SIMULATION
+//  INPUTS - SPREAD SIMULATION
 // ─────────────────────────────────────────
 spreadWidth   = input.float(2.0, "Spread Width ($)",         minval=0.5, step=0.5, group="Spread Params",
                 tooltip="Distance between short and long strikes. Max loss = spread width - premium.")
 maxPremium    = input.float(0.50, "Max Premium Collected ($)", minval=0.05, step=0.05, group="Spread Params",
                 tooltip="Approximate premium collected per spread contract (x100 = dollar value).")
-stopMultiple  = input.float(1.0, "Stop Loss (× premium)",    minval=0.5, step=0.25, group="Spread Params",
+stopMultiple  = input.float(1.0, "Stop Loss (x premium)",    minval=0.5, step=0.25, group="Spread Params",
                 tooltip="Exit when unrealized loss exceeds this multiple of the premium collected.")
-targetMultiple = input.float(0.5, "Profit Target (× premium)", minval=0.1, step=0.1, group="Spread Params",
+targetMultiple = input.float(0.5, "Profit Target (x premium)", minval=0.1, step=0.1, group="Spread Params",
                 tooltip="Exit when gain reaches this fraction of the premium collected.")
 
 // ─────────────────────────────────────────
@@ -42,8 +42,8 @@ eod          = hour == 15 and minute == 55   // close all near end of day
 [vwapVal, upper1, lower1] = ta.vwap(hlc3, true, 1)
 
 plot(vwapVal, "VWAP",    color=color.new(color.purple, 0),  linewidth=2)
-plot(upper1,  "VWAP+1σ", color=color.new(color.purple, 50), linewidth=1)
-plot(lower1,  "VWAP-1σ", color=color.new(color.purple, 50), linewidth=1)
+plot(upper1,  "VWAP+1SD", color=color.new(color.purple, 50), linewidth=1)
+plot(lower1,  "VWAP-1SD", color=color.new(color.purple, 50), linewidth=1)
 
 // ─────────────────────────────────────────
 //  OPENING RANGE BREAKOUT
@@ -117,7 +117,7 @@ plotshape(flatBottom, "Flat Bottom", style=shape.triangleup,   location=location
 atrVal = ta.atr(atrLength)
 
 // ─────────────────────────────────────────
-//  SIGNAL LOGIC — REJECTION CONFIRMATION
+//  SIGNAL LOGIC - REJECTION CONFIRMATION
 //
 //  Entry requires:
 //    1. Candle wick entered the S/R zone
@@ -152,7 +152,7 @@ putSpreadEntry  = not na(nearestSup) and inSupZone and rejectedSup and bullishBa
 //    - Profit target = 50% of premium (default)
 //
 //  The strategy goes long the underlying as a proxy.
-//  Real credit spread P&L depends on IV/theta — this tests edge direction.
+//  Real credit spread P&L depends on IV/theta - this tests edge direction.
 // ─────────────────────────────────────────
 var float entryPrice  = na
 var string tradeDir   = na
@@ -181,32 +181,32 @@ if putSpreadEntry and strategy.position_size == 0
               color=color.new(color.green, 10),
               textcolor=color.white, size=size.normal)
 
-// Exit — call spread: stop if price closes above short strike (S/R resistance level)
+// Exit - call spread: stop if price closes above short strike (S/R resistance level)
 if strategy.position_size < 0 and not na(nearestRes) and close > nearestRes
-    strategy.close("Call Spread", comment="STOP — past strike")
+    strategy.close("Call Spread", comment="STOP - past strike")
     label.new(bar_index, high + atrVal * 0.35,
-              "STOP — closed past strike",
+              "STOP - closed past strike",
               style=label.style_label_down,
               color=color.new(color.orange, 0),
               textcolor=color.black, size=size.normal)
 
-// Exit — put spread: stop if price closes below short strike (S/R support level)
+// Exit - put spread: stop if price closes below short strike (S/R support level)
 if strategy.position_size > 0 and not na(nearestSup) and close < nearestSup
-    strategy.close("Put Spread", comment="STOP — past strike")
+    strategy.close("Put Spread", comment="STOP - past strike")
     label.new(bar_index, low - atrVal * 0.35,
-              "STOP — closed past strike",
+              "STOP - closed past strike",
               style=label.style_label_up,
               color=color.new(color.orange, 0),
               textcolor=color.black, size=size.normal)
 
-// Exit — profit target: price moves away from zone by target distance
+// Exit - profit target: price moves away from zone by target distance
 if strategy.position_size < 0 and not na(entryPrice) and (entryPrice - close) >= atrVal * 0.5
     strategy.close("Call Spread", comment="Profit target hit")
 
 if strategy.position_size > 0 and not na(entryPrice) and (close - entryPrice) >= atrVal * 0.5
     strategy.close("Put Spread", comment="Profit target hit")
 
-// Exit — end of day close
+// Exit - end of day close
 if eod and strategy.position_size != 0
     strategy.close_all(comment="EOD close")
 
@@ -248,7 +248,7 @@ supStr = not na(nearestSup) ? "$" + str.tostring(nearestSup, "#.##") + "  (" + s
 f_cell(0, 4, "Support", color.new(color.gray, 80), color.new(color.silver, 0))
 f_cell(1, 4, supStr,    color.new(color.green, 40), color.white)
 
-atrStr = "±$" + str.tostring(math.round(atrVal, 2), "#.##")
+atrStr = "+/-$" + str.tostring(math.round(atrVal, 2), "#.##")
 f_cell(0, 5, "ATR Range", color.new(color.gray, 80),   color.new(color.silver, 0))
 f_cell(1, 5, atrStr,      color.new(color.purple, 30), color.white)
 
