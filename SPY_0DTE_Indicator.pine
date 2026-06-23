@@ -1,26 +1,47 @@
 //@version=5
-indicator("SPY 0DTE Credit Spread", shorttitle="SPY 0DTE", overlay=true, max_bars_back=500, max_lines_count=50, max_labels_count=50, max_boxes_count=50)
+indicator("SPY 0DTE Credit Spread", shorttitle="SPY 0DTE", overlay=true, max_bars_back=500, max_boxes_count=5, max_labels_count=50)
 
-// --- INPUTS ---
-srStrength  = input.int(2,    "S/R Pivot Strength", minval=1, maxval=5,   group="Settings")
-atrLength   = input.int(14,   "ATR Length",                               group="Settings")
-volLength   = input.int(20,   "Volume MA Length",                         group="Settings")
-zoneSize    = input.float(0.5,"S/R Zone Width ($)", minval=0.1, step=0.1, group="Settings")
-spreadType  = input.string("None", "Active Spread Type", options=["None","Call Credit Spread","Put Credit Spread"], group="Stop Alert")
+// ---- INPUTS ----------------------------------------------------------------
+srStrength  = input.int(2,    "S/R Pivot Strength",  minval=1,   maxval=5,   group="Settings")
+atrLength   = input.int(14,   "ATR Length",                                   group="Settings")
+zoneSize    = input.float(0.5,"Zone Width ($)",       minval=0.1, step=0.1,  group="Settings")
+spreadType  = input.string("None", "Active Spread",
+              options=["None","Call Credit Spread","Put Credit Spread"],
+              group="Stop Alert")
 shortStrike = input.float(0.0, "Short Strike ($)", minval=0.0, step=0.5, group="Stop Alert")
 
-// --- SESSION ---
-isRTH        = not na(time("5", "0930-1600", "America/New_York"))
+// ---- SESSION ---------------------------------------------------------------
+isRTH        = not na(time(timeframe.period, "0930-1600", "America/New_York"))
 sessionStart = hour == 9 and minute == 30
 orbEnd       = hour == 10 and minute == 0
 
-// --- VWAP ---
-[vwapVal, upper1, lower1] = ta.vwap(hlc3, true, 1)
-plot(vwapVal, "VWAP",     color=color.new(color.purple, 0),  linewidth=2)
-plot(upper1,  "VWAP+1SD", color=color.new(color.purple, 50), linewidth=1)
-plot(lower1,  "VWAP-1SD", color=color.new(color.purple, 50), linewidth=1)
+// ---- VWAP (manual daily reset - volume used only for calculation) ----------
+var float cumPV  = 0.0
+var float cumV   = 0.0
+var float cumPV2 = 0.0
+newDay = bar_index == 0 or ta.change(time("D")) != 0
 
-// --- ORB ---
+if newDay
+    cumPV  := 0.0
+    cumV   := 0.0
+    cumPV2 := 0.0
+
+if isRTH and volume > 0
+    cumPV  += hlc3 * volume
+    cumV   += volume
+    cumPV2 += hlc3 * hlc3 * volume
+
+vwapVal = cumV > 0 ? cumPV / cumV : hlc3
+vwapVar = cumV > 0 ? math.max(cumPV2 / cumV - vwapVal * vwapVal, 0.0) : 0.0
+vwapSD  = math.sqrt(vwapVar)
+vwapUp  = vwapVal + vwapSD
+vwapDn  = vwapVal - vwapSD
+
+plot(vwapVal, "VWAP",     color=color.new(color.purple, 0),  linewidth=2)
+plot(vwapUp,  "VWAP+1SD", color=color.new(color.purple, 55), linewidth=1)
+plot(vwapDn,  "VWAP-1SD", color=color.new(color.purple, 55), linewidth=1)
+
+// ---- ORB -------------------------------------------------------------------
 var float orbHigh = na
 var float orbLow  = na
 var bool  orbSet  = false
@@ -40,131 +61,161 @@ if orbEnd and not orbSet
 plot(orbSet ? orbHigh : na, "ORB High", color=color.new(color.orange, 0), linewidth=1)
 plot(orbSet ? orbLow  : na, "ORB Low",  color=color.new(color.orange, 0), linewidth=1)
 
-// --- PREVIOUS DAY ---
+// ---- PREVIOUS DAY LEVELS ---------------------------------------------------
 prevHigh  = request.security(syminfo.tickerid, "D", high[1],  lookahead=barmerge.lookahead_on)
 prevLow   = request.security(syminfo.tickerid, "D", low[1],   lookahead=barmerge.lookahead_on)
 prevClose = request.security(syminfo.tickerid, "D", close[1], lookahead=barmerge.lookahead_on)
-plot(prevHigh,  "Prev High",  color=color.new(color.green, 0),  linewidth=1)
-plot(prevLow,   "Prev Low",   color=color.new(color.red,   0),  linewidth=1)
-plot(prevClose, "Prev Close", color=color.new(color.white, 30), linewidth=1, style=plot.style_circles)
+plot(prevHigh,  "PDH", color=color.new(color.green, 0),  linewidth=1)
+plot(prevLow,   "PDL", color=color.new(color.red,   0),  linewidth=1)
+plot(prevClose, "PDC", color=color.new(color.white, 30), linewidth=1, style=plot.style_circles)
 
-// --- S/R ZONES ---
+// ---- S/R ZONES (nearest above price = resistance, nearest below = support) -
 pivotHi = ta.pivothigh(high, srStrength, srStrength)
 pivotLo = ta.pivotlow(low,  srStrength, srStrength)
 
-var box   resBox  = na
-var box   supBox  = na
-var float nearRes = na
-var float nearSup = na
+var array<float> rLvls = array.new_float(0)
+var array<float> sLvls = array.new_float(0)
 
 if not na(pivotHi)
-    nearRes := pivotHi
-    if not na(resBox)
-        box.delete(resBox)
-    resBox := box.new(bar_index - srStrength, pivotHi + zoneSize / 2, bar_index + 50, pivotHi - zoneSize / 2, border_color=color.new(color.red, 80), bgcolor=color.new(color.red, 88))
+    array.unshift(rLvls, pivotHi)
+    if array.size(rLvls) > 20
+        array.pop(rLvls)
 
 if not na(pivotLo)
-    nearSup := pivotLo
-    if not na(supBox)
-        box.delete(supBox)
-    supBox := box.new(bar_index - srStrength, pivotLo + zoneSize / 2, bar_index + 50, pivotLo - zoneSize / 2, border_color=color.new(color.green, 80), bgcolor=color.new(color.green, 88))
+    array.unshift(sLvls, pivotLo)
+    if array.size(sLvls) > 20
+        array.pop(sLvls)
 
-// --- VOLUME ---
-volColor = close >= open ? color.new(color.green, 30) : color.new(color.red, 30)
-plot(volume, "Volume", color=volColor, style=plot.style_columns)
-plot(ta.sma(volume, volLength), "Vol MA", color=color.new(color.yellow, 0), linewidth=1)
+float nearRes = na
+float nearSup = na
 
-// --- FLAT TOP / BOTTOM ---
+if array.size(rLvls) > 0
+    for i = 0 to array.size(rLvls) - 1
+        lvl = array.get(rLvls, i)
+        if lvl > close
+            nearRes := na(nearRes) ? lvl : math.min(nearRes, lvl)
+
+if array.size(sLvls) > 0
+    for i = 0 to array.size(sLvls) - 1
+        lvl = array.get(sLvls, i)
+        if lvl < close
+            nearSup := na(nearSup) ? lvl : math.max(nearSup, lvl)
+
+// One resistance box, one support box, 30 bars forward only
+var box resBox = na
+var box supBox = na
+
+if not na(resBox)
+    box.delete(resBox)
+resBox := na
+if not na(nearRes)
+    resBox := box.new(bar_index - srStrength * 2, nearRes + zoneSize / 2, bar_index + 30, nearRes - zoneSize / 2, border_color=color.new(color.red, 55), bgcolor=color.new(color.red, 83))
+
+if not na(supBox)
+    box.delete(supBox)
+supBox := na
+if not na(nearSup)
+    supBox := box.new(bar_index - srStrength * 2, nearSup + zoneSize / 2, bar_index + 30, nearSup - zoneSize / 2, border_color=color.new(color.green, 55), bgcolor=color.new(color.green, 83))
+
+// ---- FLAT TOP / BOTTOM (tiny markers only) ---------------------------------
 tolerance  = syminfo.mintick * 3
 flatTop    = math.abs(high - high[1]) < tolerance and close < open
 flatBottom = math.abs(low  - low[1])  < tolerance and close > open
 plotshape(flatTop,    "Flat Top",    style=shape.triangledown, location=location.abovebar, color=color.new(color.red,   20), size=size.tiny)
 plotshape(flatBottom, "Flat Bottom", style=shape.triangleup,   location=location.belowbar, color=color.new(color.green, 20), size=size.tiny)
 
-// --- ATR ---
+// ---- ATR -------------------------------------------------------------------
 atrVal = ta.atr(atrLength)
 
-// --- SIGNAL LOGIC (rejection confirmation required) ---
-aboveVWAP  = close > vwapVal
-belowVWAP  = close < vwapVal
-resBot     = nearRes - zoneSize / 2
-supTop     = nearSup + zoneSize / 2
-inRes      = high  >= resBot
-rejRes     = close <  resBot
-bearBar    = close <  open
-inSup      = low   <= supTop
-rejSup     = close >  supTop
-bullBar    = close >  open
-callSpread = not na(nearRes) and inRes and rejRes and bearBar and aboveVWAP
-putSpread  = not na(nearSup) and inSup and rejSup and bullBar and belowVWAP
+// ---- SIGNAL LOGIC ----------------------------------------------------------
+// Zone edges
+resBot = not na(nearRes) ? nearRes - zoneSize / 2 : na
+supTop = not na(nearSup) ? nearSup + zoneSize / 2 : na
 
-// --- STOP LOGIC ---
+// Resistance rejection: wick touched zone, candle closed bearish below zone
+inRes   = not na(resBot) and high  >= resBot
+rejRes  = not na(resBot) and close <  resBot
+bearBar = close < open
+
+// Support bounce: wick touched zone, candle closed bullish above zone
+inSup   = not na(supTop) and low   <= supTop
+rejSup  = not na(supTop) and close >  supTop
+bullBar = close > open
+
+// CALL spread: sell calls when price rejects resistance (bearish context)
+callSpread = inRes and rejRes and bearBar
+
+// PUT spread: sell puts when price bounces from support (bullish context)
+// NOTE: does NOT require price to be below VWAP - that is backwards for puts
+putSpread = inSup and rejSup and bullBar
+
+// ---- STOP LOGIC ------------------------------------------------------------
 hasOpenTrade = spreadType != "None" and shortStrike > 0
 callStop     = hasOpenTrade and spreadType == "Call Credit Spread" and close > shortStrike
 putStop      = hasOpenTrade and spreadType == "Put Credit Spread"  and close < shortStrike
 
-// --- SHAPES ---
+// ---- SHAPES ----------------------------------------------------------------
 plotshape(callSpread, "Call Spread", style=shape.triangledown, location=location.abovebar, color=color.new(color.red,   0), size=size.small)
 plotshape(putSpread,  "Put Spread",  style=shape.triangleup,   location=location.belowbar, color=color.new(color.green, 0), size=size.small)
 
-// --- LABELS (strings built outside if blocks, single-line label.new calls) ---
-callStopTxt = "STOP - past call strike $" + str.tostring(shortStrike, "#.##")
-putStopTxt  = "STOP - past put strike $"  + str.tostring(shortStrike, "#.##")
+// ---- LABELS (strings pre-built, all label.new on single lines) -------------
+callStopTxt = "STOP - past call $" + str.tostring(shortStrike, "#.##")
+putStopTxt  = "STOP - past put $"  + str.tostring(shortStrike, "#.##")
 
 if callSpread
-    label.new(bar_index, high + atrVal * 0.35, "CALL SPREAD SETUP", style=label.style_label_down, color=color.new(color.red, 10), textcolor=color.white, size=size.normal)
+    label.new(bar_index, high + atrVal * 0.2, "CALL SPREAD", style=label.style_label_down, color=color.new(color.red, 10), textcolor=color.white, size=size.small)
 
 if putSpread
-    label.new(bar_index, low - atrVal * 0.35, "PUT SPREAD SETUP", style=label.style_label_up, color=color.new(color.green, 10), textcolor=color.white, size=size.normal)
+    label.new(bar_index, low - atrVal * 0.2, "PUT SPREAD", style=label.style_label_up, color=color.new(color.green, 10), textcolor=color.white, size=size.small)
 
 if callStop
-    label.new(bar_index, high + atrVal * 0.35, callStopTxt, style=label.style_label_down, color=color.new(color.orange, 0), textcolor=color.black, size=size.normal)
+    label.new(bar_index, high + atrVal * 0.2, callStopTxt, style=label.style_label_down, color=color.new(color.orange, 0), textcolor=color.black, size=size.small)
 
 if putStop
-    label.new(bar_index, low - atrVal * 0.35, putStopTxt, style=label.style_label_up, color=color.new(color.orange, 0), textcolor=color.black, size=size.normal)
+    label.new(bar_index, low - atrVal * 0.2, putStopTxt, style=label.style_label_up, color=color.new(color.orange, 0), textcolor=color.black, size=size.small)
 
-// --- ALERTS ---
-alertcondition(callSpread, "Call Spread Setup", "CALL SPREAD SETUP - resistance rejection above VWAP")
-alertcondition(putSpread,  "Put Spread Setup",  "PUT SPREAD SETUP - support rejection below VWAP")
+// ---- ALERTS ----------------------------------------------------------------
+alertcondition(callSpread, "Call Spread Setup", "CALL SPREAD SETUP - resistance rejection")
+alertcondition(putSpread,  "Put Spread Setup",  "PUT SPREAD SETUP - support bounce")
 alertcondition(callStop,   "Call Stop Alert",   "STOP - call strike breached")
 alertcondition(putStop,    "Put Stop Alert",    "STOP - put strike breached")
 
-// --- DASHBOARD ---
-var table dash = table.new(position.top_right, 2, 7, bgcolor=color.new(color.black, 15), border_color=color.new(color.gray, 50), border_width=1, frame_color=color.new(color.gray, 30), frame_width=1)
+// ---- DASHBOARD (small text for mobile) -------------------------------------
+var table dash = table.new(position.top_right, 2, 7, bgcolor=color.new(color.black, 20), border_color=color.new(color.gray, 60), border_width=1, frame_color=color.new(color.gray, 40), frame_width=1)
 
 f_cell(col, row, txt, bg, tc) =>
-    table.cell(dash, col, row, txt, bgcolor=bg, text_color=tc, text_size=size.normal, text_halign=text.align_left)
+    table.cell(dash, col, row, txt, bgcolor=bg, text_color=tc, text_size=size.small, text_halign=text.align_left)
 
-f_cell(0, 0, "SPY 0DTE",  color.new(color.navy, 0), color.white)
-f_cell(1, 0, "DASHBOARD", color.new(color.navy, 0), color.white)
+f_cell(0, 0, "SPY 0DTE", color.new(color.navy, 10), color.white)
+f_cell(1, 0, "SETUP",    color.new(color.navy, 10), color.white)
 
-vwapBias    = aboveVWAP ? "BULLISH" : "BEARISH"
-vwapBiasClr = aboveVWAP ? color.new(color.green, 20) : color.new(color.red, 20)
-f_cell(0, 1, "VWAP Bias", color.new(color.gray, 80), color.new(color.silver, 0))
-f_cell(1, 1, vwapBias,    vwapBiasClr,               color.white)
+vwapBias    = close > vwapVal ? "BULLISH" : "BEARISH"
+vwapBiasClr = close > vwapVal ? color.new(color.green, 25) : color.new(color.red, 25)
+f_cell(0, 1, "VWAP",   color.new(color.gray, 75), color.new(color.silver, 0))
+f_cell(1, 1, vwapBias, vwapBiasClr,               color.white)
 
 aboveORB = orbSet and close > orbHigh
 belowORB = orbSet and close < orbLow
-orbStr   = not orbSet ? "SETTING..." : aboveORB ? "ABOVE ORB" : belowORB ? "BELOW ORB" : "INSIDE ORB"
-orbClr   = not orbSet ? color.new(color.gray, 50) : aboveORB ? color.new(color.green, 20) : belowORB ? color.new(color.red, 20) : color.new(color.gray, 40)
-f_cell(0, 2, "ORB Status", color.new(color.gray, 80), color.new(color.silver, 0))
-f_cell(1, 2, orbStr,       orbClr,                    color.white)
+orbStr   = not orbSet ? "SETTING" : aboveORB ? "ABOVE" : belowORB ? "BELOW" : "INSIDE"
+orbClr   = not orbSet ? color.new(color.gray, 50) : aboveORB ? color.new(color.green, 25) : belowORB ? color.new(color.red, 25) : color.new(color.gray, 45)
+f_cell(0, 2, "ORB",  color.new(color.gray, 75), color.new(color.silver, 0))
+f_cell(1, 2, orbStr, orbClr,                    color.white)
 
 resDist = not na(nearRes) ? math.abs(close - nearRes) : 0.0
-resStr  = not na(nearRes) ? "$" + str.tostring(nearRes, "#.##") + " (" + str.tostring(resDist, "#.##") + " away)" : "N/A"
-f_cell(0, 3, "Resistance", color.new(color.gray, 80),  color.new(color.silver, 0))
-f_cell(1, 3, resStr,       color.new(color.red,   40), color.white)
+resStr  = not na(nearRes) ? "$" + str.tostring(nearRes, "#.##") + " (" + str.tostring(resDist, "#.##") + ")" : "N/A"
+f_cell(0, 3, "RES",  color.new(color.gray, 75),  color.new(color.silver, 0))
+f_cell(1, 3, resStr, color.new(color.red,   40), color.white)
 
 supDist = not na(nearSup) ? math.abs(close - nearSup) : 0.0
-supStr  = not na(nearSup) ? "$" + str.tostring(nearSup, "#.##") + " (" + str.tostring(supDist, "#.##") + " away)" : "N/A"
-f_cell(0, 4, "Support", color.new(color.gray, 80),  color.new(color.silver, 0))
-f_cell(1, 4, supStr,    color.new(color.green, 40), color.white)
+supStr  = not na(nearSup) ? "$" + str.tostring(nearSup, "#.##") + " (" + str.tostring(supDist, "#.##") + ")" : "N/A"
+f_cell(0, 4, "SUP",  color.new(color.gray, 75),   color.new(color.silver, 0))
+f_cell(1, 4, supStr, color.new(color.green, 40), color.white)
 
 atrStr = "+/-$" + str.tostring(atrVal, "#.##")
-f_cell(0, 5, "ATR Range", color.new(color.gray, 80),   color.new(color.silver, 0))
-f_cell(1, 5, atrStr,      color.new(color.purple, 30), color.white)
+f_cell(0, 5, "ATR",  color.new(color.gray, 75),   color.new(color.silver, 0))
+f_cell(1, 5, atrStr, color.new(color.purple, 35), color.white)
 
-strikeTxt = hasOpenTrade ? spreadType + " @ $" + str.tostring(shortStrike, "#.##") : "No active trade"
-strikeClr = hasOpenTrade ? (spreadType == "Call Credit Spread" ? color.new(color.red, 40) : color.new(color.green, 40)) : color.new(color.gray, 50)
-f_cell(0, 6, "Short Strike", color.new(color.gray, 80), color.new(color.silver, 0))
-f_cell(1, 6, strikeTxt,      strikeClr,                 color.white)
+strikeTxt = hasOpenTrade ? spreadType + " $" + str.tostring(shortStrike, "#.##") : "None"
+strikeClr = hasOpenTrade ? (spreadType == "Call Credit Spread" ? color.new(color.red, 35) : color.new(color.green, 35)) : color.new(color.gray, 55)
+f_cell(0, 6, "STRIKE",  color.new(color.gray, 75), color.new(color.silver, 0))
+f_cell(1, 6, strikeTxt, strikeClr,                 color.white)
