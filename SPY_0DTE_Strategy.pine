@@ -1,0 +1,258 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0
+// © tradeDash
+
+//@version=5
+strategy("SPY 0DTE Credit Spread — Backtest", shorttitle="SPY 0DTE BT",
+         overlay=true, default_qty_type=strategy.fixed, default_qty_value=1,
+         initial_capital=25000, commission_type=strategy.commission.cash_per_contract,
+         commission_value=0.65, max_bars_back=500)
+
+// ─────────────────────────────────────────
+//  INPUTS — GENERAL
+// ─────────────────────────────────────────
+orbMinutes  = input.int(30,   "ORB Window (minutes)", minval=5,   maxval=60,  group="Settings")
+srStrength  = input.int(2,    "S/R Pivot Strength",   minval=1,   maxval=5,   group="Settings")
+atrLength   = input.int(14,   "ATR Length",                                   group="Settings")
+volLength   = input.int(20,   "Volume MA Length",                             group="Settings")
+zoneSize    = input.float(0.5,"S/R Zone Width ($)",   minval=0.1, step=0.1,  group="Settings")
+
+// ─────────────────────────────────────────
+//  INPUTS — SPREAD SIMULATION
+// ─────────────────────────────────────────
+spreadWidth   = input.float(2.0, "Spread Width ($)",         minval=0.5, step=0.5, group="Spread Params",
+                tooltip="Distance between short and long strikes. Max loss = spread width - premium.")
+maxPremium    = input.float(0.50, "Max Premium Collected ($)", minval=0.05, step=0.05, group="Spread Params",
+                tooltip="Approximate premium collected per spread contract (x100 = dollar value).")
+stopMultiple  = input.float(1.0, "Stop Loss (× premium)",    minval=0.5, step=0.25, group="Spread Params",
+                tooltip="Exit when unrealized loss exceeds this multiple of the premium collected.")
+targetMultiple = input.float(0.5, "Profit Target (× premium)", minval=0.1, step=0.1, group="Spread Params",
+                tooltip="Exit when gain reaches this fraction of the premium collected.")
+
+// ─────────────────────────────────────────
+//  SESSION / TIME
+// ─────────────────────────────────────────
+isRTH        = not na(time("5", "0930-1600", "America/New_York"))
+sessionStart = hour == 9 and minute == 30
+orbEnd       = hour == 10 and minute == 0
+eod          = hour == 15 and minute == 55   // close all near end of day
+
+// ─────────────────────────────────────────
+//  VWAP
+// ─────────────────────────────────────────
+[vwapVal, upper1, lower1] = ta.vwap(hlc3, true, 1)
+
+plot(vwapVal, "VWAP",    color=color.new(color.purple, 0),  linewidth=2)
+plot(upper1,  "VWAP+1σ", color=color.new(color.purple, 50), linewidth=1)
+plot(lower1,  "VWAP-1σ", color=color.new(color.purple, 50), linewidth=1)
+
+// ─────────────────────────────────────────
+//  OPENING RANGE BREAKOUT
+// ─────────────────────────────────────────
+var float orbHigh = na
+var float orbLow  = na
+var bool  orbSet  = false
+
+if sessionStart
+    orbHigh := high
+    orbLow  := low
+    orbSet  := false
+
+if isRTH and not orbSet
+    orbHigh := math.max(orbHigh, high)
+    orbLow  := math.min(orbLow, low)
+
+if orbEnd and not orbSet
+    orbSet := true
+
+plot(orbSet ? orbHigh : na, "ORB High", color=color.new(color.orange, 0), linewidth=1)
+plot(orbSet ? orbLow  : na, "ORB Low",  color=color.new(color.orange, 0), linewidth=1)
+
+// ─────────────────────────────────────────
+//  PREVIOUS DAY LEVELS
+// ─────────────────────────────────────────
+prevHigh  = request.security(syminfo.tickerid, "D", high[1],  lookahead=barmerge.lookahead_on)
+prevLow   = request.security(syminfo.tickerid, "D", low[1],   lookahead=barmerge.lookahead_on)
+prevClose = request.security(syminfo.tickerid, "D", close[1], lookahead=barmerge.lookahead_on)
+
+plot(prevHigh,  "Prev High",  color=color.new(color.green, 0),  linewidth=1)
+plot(prevLow,   "Prev Low",   color=color.new(color.red,   0),  linewidth=1)
+plot(prevClose, "Prev Close", color=color.new(color.white, 30), linewidth=1, style=plot.style_circles)
+
+// ─────────────────────────────────────────
+//  S/R ZONES
+// ─────────────────────────────────────────
+pivotHigh = ta.pivothigh(high, srStrength, srStrength)
+pivotLow  = ta.pivotlow(low,  srStrength, srStrength)
+
+var float nearestRes = na
+var float nearestSup = na
+
+if not na(pivotHigh)
+    nearestRes := pivotHigh
+if not na(pivotLow)
+    nearestSup := pivotLow
+
+// ─────────────────────────────────────────
+//  VOLUME
+// ─────────────────────────────────────────
+volColor = close >= open ? color.new(color.green, 30) : color.new(color.red, 30)
+plot(volume, "Volume", color=volColor, style=plot.style_columns)
+plot(ta.sma(volume, volLength), "Vol MA", color=color.new(color.yellow, 0), linewidth=1)
+
+// ─────────────────────────────────────────
+//  FLAT TOP / FLAT BOTTOM
+// ─────────────────────────────────────────
+tolerance  = syminfo.mintick * 3
+flatTop    = math.abs(high - high[1]) < tolerance and close < open
+flatBottom = math.abs(low  - low[1])  < tolerance and close > open
+
+plotshape(flatTop,    "Flat Top",    style=shape.triangledown, location=location.abovebar,
+          color=color.new(color.red,   20), size=size.tiny)
+plotshape(flatBottom, "Flat Bottom", style=shape.triangleup,   location=location.belowbar,
+          color=color.new(color.green, 20), size=size.tiny)
+
+// ─────────────────────────────────────────
+//  ATR
+// ─────────────────────────────────────────
+atrVal = ta.atr(atrLength)
+
+// ─────────────────────────────────────────
+//  SIGNAL LOGIC — REJECTION CONFIRMATION
+//
+//  Entry requires:
+//    1. Candle wick entered the S/R zone
+//    2. Candle closed back away from the zone (rejection candle)
+//    3. Price is on the correct side of VWAP for the spread type
+// ─────────────────────────────────────────
+aboveVWAP = close > vwapVal
+belowVWAP = close < vwapVal
+
+resZoneBottom = nearestRes - zoneSize / 2
+supZoneTop    = nearestSup + zoneSize / 2
+
+inResZone   = high  >= resZoneBottom
+rejectedRes = close <  resZoneBottom
+bearishBar  = close <  open
+
+inSupZone   = low   <= supZoneTop
+rejectedSup = close >  supZoneTop
+bullishBar  = close >  open
+
+callSpreadEntry = not na(nearestRes) and inResZone and rejectedRes and bearishBar and aboveVWAP and orbSet
+putSpreadEntry  = not na(nearestSup) and inSupZone and rejectedSup and bullishBar and belowVWAP  and orbSet
+
+// ─────────────────────────────────────────
+//  STRATEGY ENTRIES & EXITS
+//
+//  Credit spread P&L model (simplified for backtesting):
+//    - Max gain  = premium collected
+//    - Max loss  = spread width - premium
+//    - We simulate with the underlying price movement as a proxy.
+//    - Stop loss = close past the short strike (= S/R zone level)
+//    - Profit target = 50% of premium (default)
+//
+//  The strategy goes long the underlying as a proxy.
+//  Real credit spread P&L depends on IV/theta — this tests edge direction.
+// ─────────────────────────────────────────
+var float entryPrice  = na
+var string tradeDir   = na
+
+stopLossDollar   = maxPremium * stopMultiple    * 100   // per-contract dollar stop
+profitTargetDollar = maxPremium * targetMultiple * 100  // per-contract dollar target
+
+// Entry
+if callSpreadEntry and strategy.position_size == 0
+    strategy.entry("Call Spread", strategy.short, comment="CALL SPREAD SETUP")
+    entryPrice := close
+    tradeDir   := "call"
+    label.new(bar_index, high + atrVal * 0.35,
+              "CALL SPREAD SETUP",
+              style=label.style_label_down,
+              color=color.new(color.red, 10),
+              textcolor=color.white, size=size.normal)
+
+if putSpreadEntry and strategy.position_size == 0
+    strategy.entry("Put Spread", strategy.long, comment="PUT SPREAD SETUP")
+    entryPrice := close
+    tradeDir   := "put"
+    label.new(bar_index, low - atrVal * 0.35,
+              "PUT SPREAD SETUP",
+              style=label.style_label_up,
+              color=color.new(color.green, 10),
+              textcolor=color.white, size=size.normal)
+
+// Exit — call spread: stop if price closes above short strike (S/R resistance level)
+if strategy.position_size < 0 and not na(nearestRes) and close > nearestRes
+    strategy.close("Call Spread", comment="STOP — past strike")
+    label.new(bar_index, high + atrVal * 0.35,
+              "STOP — closed past strike",
+              style=label.style_label_down,
+              color=color.new(color.orange, 0),
+              textcolor=color.black, size=size.normal)
+
+// Exit — put spread: stop if price closes below short strike (S/R support level)
+if strategy.position_size > 0 and not na(nearestSup) and close < nearestSup
+    strategy.close("Put Spread", comment="STOP — past strike")
+    label.new(bar_index, low - atrVal * 0.35,
+              "STOP — closed past strike",
+              style=label.style_label_up,
+              color=color.new(color.orange, 0),
+              textcolor=color.black, size=size.normal)
+
+// Exit — profit target: price moves away from zone by target distance
+if strategy.position_size < 0 and not na(entryPrice) and (entryPrice - close) >= atrVal * 0.5
+    strategy.close("Call Spread", comment="Profit target hit")
+
+if strategy.position_size > 0 and not na(entryPrice) and (close - entryPrice) >= atrVal * 0.5
+    strategy.close("Put Spread", comment="Profit target hit")
+
+// Exit — end of day close
+if eod and strategy.position_size != 0
+    strategy.close_all(comment="EOD close")
+
+// ─────────────────────────────────────────
+//  DASHBOARD TABLE (top right)
+// ─────────────────────────────────────────
+var table dash = table.new(position.top_right, 2, 7,
+                            bgcolor=color.new(color.black, 15),
+                            border_color=color.new(color.gray, 50),
+                            border_width=1,
+                            frame_color=color.new(color.gray, 30),
+                            frame_width=1)
+
+f_cell(col, row, txt, bg, tc) =>
+    table.cell(dash, col, row, txt,
+               bgcolor=bg, text_color=tc,
+               text_size=size.normal, text_halign=text.align_left)
+
+f_cell(0, 0, "SPY 0DTE",  color.new(color.navy, 0), color.white)
+f_cell(1, 0, "BACKTEST",  color.new(color.navy, 0), color.white)
+
+vwapBias    = aboveVWAP ? "BULLISH" : "BEARISH"
+vwapBiasClr = aboveVWAP ? color.new(color.green, 20) : color.new(color.red, 20)
+f_cell(0, 1, "VWAP Bias", color.new(color.gray, 80), color.new(color.silver, 0))
+f_cell(1, 1, vwapBias,    vwapBiasClr,               color.white)
+
+aboveORB  = orbSet and close > orbHigh
+belowORB  = orbSet and close < orbLow
+orbStatus = not orbSet ? "SETTING..." : aboveORB ? "ABOVE ORB" : belowORB ? "BELOW ORB" : "INSIDE ORB"
+orbClr    = not orbSet ? color.new(color.gray, 50) : aboveORB ? color.new(color.green, 20) : belowORB ? color.new(color.red, 20) : color.new(color.gray, 40)
+f_cell(0, 2, "ORB Status", color.new(color.gray, 80), color.new(color.silver, 0))
+f_cell(1, 2, orbStatus,    orbClr,                    color.white)
+
+resStr = not na(nearestRes) ? "$" + str.tostring(nearestRes, "#.##") + "  (" + str.tostring(math.round(math.abs(close - nearestRes), 2), "#.##") + " away)" : "N/A"
+f_cell(0, 3, "Resistance", color.new(color.gray, 80), color.new(color.silver, 0))
+f_cell(1, 3, resStr,       color.new(color.red,   40), color.white)
+
+supStr = not na(nearestSup) ? "$" + str.tostring(nearestSup, "#.##") + "  (" + str.tostring(math.round(math.abs(close - nearestSup), 2), "#.##") + " away)" : "N/A"
+f_cell(0, 4, "Support", color.new(color.gray, 80), color.new(color.silver, 0))
+f_cell(1, 4, supStr,    color.new(color.green, 40), color.white)
+
+atrStr = "±$" + str.tostring(math.round(atrVal, 2), "#.##")
+f_cell(0, 5, "ATR Range", color.new(color.gray, 80),   color.new(color.silver, 0))
+f_cell(1, 5, atrStr,      color.new(color.purple, 30), color.white)
+
+posStr = strategy.position_size == 0 ? "Flat" : strategy.position_size > 0 ? "Long (put spd)" : "Short (call spd)"
+posClr = strategy.position_size == 0 ? color.new(color.gray, 50) : strategy.position_size > 0 ? color.new(color.green, 30) : color.new(color.red, 30)
+f_cell(0, 6, "Position", color.new(color.gray, 80), color.new(color.silver, 0))
+f_cell(1, 6, posStr,     posClr,                    color.white)
