@@ -34,17 +34,17 @@ export const metadata: Metadata = {
     title: 'CR Disposal | Dumpster Rentals Done Right',
     description:
       'Fast, transparent dumpster rentals for contractors and homeowners across the Lehigh Valley, PA.',
-    images: [{ url: '/images/logo.png', width: 1200, height: 1200, alt: 'CR Disposal' }],
+    images: [{ url: `${site.url}/images/logo.png`, width: 1200, height: 1200, alt: 'CR Disposal' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'CR Disposal | Dumpster Rentals Done Right',
     description: 'Fast, transparent dumpster rentals across the Lehigh Valley, PA.',
-    images: ['/images/logo.png'],
+    images: [`${site.url}/images/logo.png`],
   },
   icons: {
-    icon: '/images/logo.png',
-    apple: '/images/logo.png',
+    icon: `${site.url}/images/logo.png`,
+    apple: `${site.url}/images/logo.png`,
   },
   robots: { index: true, follow: true },
 };

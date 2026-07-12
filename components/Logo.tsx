@@ -1,11 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { assetPrefix } from '@/lib/site';
 
 export default function Logo({ className = '' }: { className?: string }) {
   return (
     <Link href="/" className={`flex items-center gap-2.5 ${className}`} aria-label="CR Disposal home">
       <Image
-        src="/images/logo.png"
+        src={`${assetPrefix}/images/logo.png`}
         alt="CR Disposal"
         width={44}
         height={44}

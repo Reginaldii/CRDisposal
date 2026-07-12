@@ -1,3 +1,7 @@
+// GitHub Pages serves this project from a /tradeDash sub-path, so every
+// static asset reference needs that prefix when built for that target.
+export const assetPrefix = process.env.GITHUB_PAGES === 'true' ? '/tradeDash' : '';
+
 export const site = {
   name: 'CR Disposal',
   tagline: 'Dumpster Rentals Done Right.',
@@ -20,7 +24,10 @@ export const site = {
     facebook: 'https://facebook.com',
     instagram: 'https://instagram.com',
   },
-  url: 'https://www.crdisposal.com',
+  url:
+    process.env.GITHUB_PAGES === 'true'
+      ? 'https://reginaldii.github.io/tradeDash'
+      : 'https://www.crdisposal.com',
 };
 
 export const primaryNav = [
