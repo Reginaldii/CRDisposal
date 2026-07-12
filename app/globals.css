@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-white text-ink-900 antialiased dark:bg-ink-900 dark:text-white;
+  font-feature-settings: 'ss01' on, 'cv01' on;
+}
+
+::selection {
+  @apply bg-yellow-500 text-ink-900;
+}
+
+.container-x {
+  @apply mx-auto w-full max-w-8xl px-6 md:px-10;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold tracking-tight transition-all duration-200 ease-out active:scale-[0.97];
+}
+
+.btn-primary {
+  @apply btn bg-yellow-500 text-ink-900 shadow-soft hover:bg-yellow-400 hover:shadow-lift;
+}
+
+.btn-dark {
+  @apply btn bg-ink-900 text-white hover:bg-ink-700 dark:bg-white dark:text-ink-900 dark:hover:bg-ink-100;
+}
+
+.btn-outline {
+  @apply btn border border-ink-900/15 bg-transparent text-ink-900 hover:border-ink-900/40 dark:border-white/20 dark:text-white dark:hover:border-white/50;
+}
+
+.eyebrow {
+  @apply text-xs font-semibold uppercase tracking-[0.2em] text-yellow-600 dark:text-yellow-400;
+}
+
+.section {
+  @apply py-20 md:py-28;
+}
+
+.fade-up {
+  animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
