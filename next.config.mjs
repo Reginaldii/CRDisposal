@@ -1,5 +1,5 @@
 const isGithubPages = process.env.GITHUB_PAGES === 'true';
-const repoName = 'tradeDash';
+const repoName = 'CRDisposal';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

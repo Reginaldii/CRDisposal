@@ -1,6 +1,7 @@
-// GitHub Pages serves this project from a /tradeDash sub-path, so every
+// GitHub Pages serves this project from a /CRDisposal sub-path, so every
 // static asset reference needs that prefix when built for that target.
-export const assetPrefix = process.env.GITHUB_PAGES === 'true' ? '/tradeDash' : '';
+// Keep this in sync with `repoName` in next.config.mjs.
+export const assetPrefix = process.env.GITHUB_PAGES === 'true' ? '/CRDisposal' : '';
 
 export const site = {
   name: 'CR Disposal',
@@ -26,7 +27,7 @@ export const site = {
   },
   url:
     process.env.GITHUB_PAGES === 'true'
-      ? 'https://reginaldii.github.io/tradeDash'
+      ? 'https://reginaldii.github.io/CRDisposal'
       : 'https://www.crdisposal.com',
 };
 
