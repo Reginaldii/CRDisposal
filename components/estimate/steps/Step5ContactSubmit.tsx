@@ -15,7 +15,8 @@ export default function Step5ContactSubmit({
   data: EstimateFormData;
   update: (patch: Partial<EstimateFormData>) => void;
 }) {
-  const itemLabels = data.items.map((id) => labelFor(allItems, id));
+  const itemLabels = data.items
+    .map((id) => (id === 'other' && data.otherDescription ? data.otherDescription : labelFor(allItems, id)));
   const truckLabel = labelFor(truckFillLevels, data.truckFill);
 
   return (

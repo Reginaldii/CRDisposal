@@ -1,23 +1,17 @@
 export const site = {
   name: 'CR Disposal',
   tagline: 'Junk Gone Today.',
-  phone: '(610) 555-0199',
-  phoneHref: 'tel:+16105550199',
-  smsHref: 'sms:+16105550199',
-  email: 'hello@crdisposal.com',
+  phone: '(484) 272-7021',
+  phoneHref: 'tel:+14842727021',
+  smsHref: 'sms:+14842727021',
+  email: 'crdisposalservice@gmail.com',
   rating: 4.9,
   reviewCount: 200,
-  address: {
-    street: '4200 Industrial Park Rd',
-    city: 'Allentown',
-    state: 'PA',
-    zip: '18109',
-  },
-  hours: [
-    { days: 'Monday – Friday', time: '7:00 AM – 7:00 PM' },
-    { days: 'Saturday', time: '8:00 AM – 4:00 PM' },
-    { days: 'Sunday', time: 'Closed (Emergency service available)' },
-  ],
+  // No public street address yet — keep this null rather than showing a
+  // fake one, and every consumer below should render around it being unset.
+  address: null as { street: string; city: string; state: string; zip: string } | null,
+  serviceArea: 'Lehigh Valley, PA',
+  hours: [{ days: 'Every day', time: '24/7 — on call' }],
   social: {
     google: 'https://www.google.com/maps',
     facebook: 'https://facebook.com',

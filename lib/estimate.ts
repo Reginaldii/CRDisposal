@@ -108,9 +108,9 @@ export const specialConditions = [
 
 export type TruckFillLevel = { id: string; label: string; fill: number; desc: string };
 
-// Fill levels are relative to the bed of our 2011 Ford F350 4x4 Mason dump
-// truck — this is the one piece of physical equipment the whole estimate
-// flow is calibrated against.
+// Fill levels are relative to our dump truck's bed — this is the one
+// piece of physical equipment the whole estimate flow is calibrated
+// against. Deliberately no make/model in customer-facing copy.
 export const truckFillLevels: TruckFillLevel[] = [
   { id: 'single-item', label: 'Single Item', fill: 0.05, desc: 'One piece of furniture or appliance' },
   { id: 'pickup-load', label: 'Pickup Load', fill: 0.2, desc: 'About a pickup truck bed' },

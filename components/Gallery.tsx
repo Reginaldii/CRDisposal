@@ -4,7 +4,7 @@ const items: { label: string; variant: 'dark' | 'yellow' | 'slate'; ratio: strin
   { label: 'Before / After — Garage Cleanout', variant: 'dark', ratio: 'aspect-[4/3]' },
   { label: 'Before / After — Estate Cleanout', variant: 'yellow', ratio: 'aspect-square' },
   { label: 'Furniture & Appliance Pickup', variant: 'slate', ratio: 'aspect-[4/3]' },
-  { label: 'F350 Dump Truck On-Site', variant: 'dark', ratio: 'aspect-square' },
+  { label: 'Truck On-Site', variant: 'dark', ratio: 'aspect-square' },
   { label: 'Before / After — Storage Unit Cleanout', variant: 'yellow', ratio: 'aspect-[4/3]' },
   { label: 'Construction Debris Loadout', variant: 'slate', ratio: 'aspect-[4/3]' },
 ];

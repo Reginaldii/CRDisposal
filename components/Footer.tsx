@@ -23,7 +23,9 @@ export default function Footer() {
               </a>
               <span className="flex items-center gap-2.5">
                 <MapPinIcon className="h-4 w-4 text-yellow-500" />
-                {site.address.street}, {site.address.city}, {site.address.state} {site.address.zip}
+                {site.address
+                  ? `${site.address.street}, ${site.address.city}, ${site.address.state} ${site.address.zip}`
+                  : `Serving ${site.serviceArea}`}
               </span>
             </div>
           </div>

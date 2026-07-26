@@ -5,6 +5,7 @@ import EstimateSection from '@/components/EstimateSection';
 import WhyChooseUs from '@/components/WhyChooseUs';
 import ServicesGrid from '@/components/ServicesGrid';
 import HowItWorks from '@/components/HowItWorks';
+import RestrictedItemsSection from '@/components/RestrictedItemsSection';
 import AboutSection from '@/components/AboutSection';
 import Testimonials from '@/components/Testimonials';
 import Gallery from '@/components/Gallery';
@@ -27,6 +28,7 @@ export default function HomePage() {
       <WhyChooseUs />
       <ServicesGrid />
       <HowItWorks />
+      <RestrictedItemsSection />
       <AboutSection />
       <Testimonials />
       <Gallery />
