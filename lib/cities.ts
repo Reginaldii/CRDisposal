@@ -6,16 +6,16 @@ export type City = {
 };
 
 export const cities: City[] = [
-  { slug: 'allentown', name: 'Allentown', county: 'Lehigh County', blurb: "Lehigh Valley's largest city — fast delivery for contractors and homeowners across every neighborhood." },
-  { slug: 'bethlehem', name: 'Bethlehem', county: 'Northampton / Lehigh County', blurb: 'Serving the Southside, Historic District, and every remodel or new-build site in between.' },
-  { slug: 'easton', name: 'Easton', county: 'Northampton County', blurb: 'Reliable dumpster delivery for Easton contractors, property managers, and homeowners.' },
-  { slug: 'whitehall', name: 'Whitehall', county: 'Lehigh County', blurb: 'Same-day and next-day roll-off service throughout Whitehall Township.' },
-  { slug: 'emmaus', name: 'Emmaus', county: 'Lehigh County', blurb: 'Residential and contractor dumpster rentals across Emmaus and South Whitehall.' },
-  { slug: 'macungie', name: 'Macungie', county: 'Lehigh County', blurb: 'Fast hooklift delivery for new construction and remodel sites in Macungie.' },
-  { slug: 'catasauqua', name: 'Catasauqua', county: 'Lehigh County', blurb: 'Dependable dumpster rental for Catasauqua homeowners and local contractors.' },
-  { slug: 'nazareth', name: 'Nazareth', county: 'Northampton County', blurb: 'Serving Nazareth remodels, cleanouts, and construction projects on schedule.' },
-  { slug: 'northampton', name: 'Northampton', county: 'Northampton County', blurb: 'Roll-off dumpster delivery across Northampton Borough and surrounding townships.' },
-  { slug: 'coopersburg', name: 'Coopersburg', county: 'Lehigh County', blurb: 'Local, fast dumpster service for Coopersburg homes and job sites.' },
-  { slug: 'trexlertown', name: 'Trexlertown', county: 'Lehigh County', blurb: 'Contractor-trusted hauling and dumpster delivery in Trexlertown and South Whitehall.' },
-  { slug: 'hellertown', name: 'Hellertown', county: 'Northampton County', blurb: 'Dumpster rentals for Hellertown and Lower Saucon Township projects of any size.' },
+  { slug: 'allentown', name: 'Allentown', county: 'Lehigh County', blurb: "Lehigh Valley's largest city — same-day junk removal across every neighborhood." },
+  { slug: 'bethlehem', name: 'Bethlehem', county: 'Northampton / Lehigh County', blurb: 'Serving the Southside, Historic District, and every cleanout in between.' },
+  { slug: 'easton', name: 'Easton', county: 'Northampton County', blurb: 'Fast, affordable junk removal for Easton homeowners and property managers.' },
+  { slug: 'whitehall', name: 'Whitehall', county: 'Lehigh County', blurb: 'Same-day and next-day pickup throughout Whitehall Township.' },
+  { slug: 'emmaus', name: 'Emmaus', county: 'Lehigh County', blurb: 'Residential junk removal and cleanouts across Emmaus and South Whitehall.' },
+  { slug: 'macungie', name: 'Macungie', county: 'Lehigh County', blurb: 'Fast pickup for cleanouts and junk removal in Macungie.' },
+  { slug: 'catasauqua', name: 'Catasauqua', county: 'Lehigh County', blurb: 'Dependable junk removal for Catasauqua homeowners and landlords.' },
+  { slug: 'nazareth', name: 'Nazareth', county: 'Northampton County', blurb: 'Serving Nazareth cleanouts and junk removal on schedule.' },
+  { slug: 'northampton', name: 'Northampton', county: 'Northampton County', blurb: 'Junk removal across Northampton Borough and surrounding townships.' },
+  { slug: 'coopersburg', name: 'Coopersburg', county: 'Lehigh County', blurb: 'Local, fast junk removal for Coopersburg homes.' },
+  { slug: 'trexlertown', name: 'Trexlertown', county: 'Lehigh County', blurb: 'Trusted junk removal and hauling in Trexlertown and South Whitehall.' },
+  { slug: 'hellertown', name: 'Hellertown', county: 'Northampton County', blurb: 'Junk removal for Hellertown and Lower Saucon Township, any size job.' },
 ];
