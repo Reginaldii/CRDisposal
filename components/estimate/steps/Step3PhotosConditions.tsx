@@ -1,10 +1,10 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { EstimateFormData, Photo } from '../types';
+import { EstimateFormData, MIN_PHOTOS, Photo } from '../types';
 import { compressImage } from '@/lib/compressImage';
 import { site } from '@/lib/site';
-import { specialConditions } from '@/lib/estimate';
+import { accessConditions } from '@/lib/estimate';
 import { CameraIcon, UploadIcon, CloseIcon, MessageIcon, CheckIcon } from '../../icons';
 
 const MAX_PHOTOS = 20;
@@ -49,14 +49,17 @@ export default function Step3PhotosConditions({
     update({ conditions: has ? data.conditions.filter((c) => c !== id) : [...data.conditions, id] });
   }
 
+  const remaining = Math.max(0, MIN_PHOTOS - data.photos.length);
+
   return (
     <div className="space-y-6">
       <div>
         <h3 className="font-display text-2xl font-extrabold tracking-tight md:text-3xl">
-          Add photos &amp; details.
+          Show us what needs to go.
         </h3>
         <p className="mt-2 text-sm text-ink-500 dark:text-ink-300">
-          Both totally optional — skip straight to Continue if you&apos;d rather not.
+          At least {MIN_PHOTOS} photos, up to {MAX_PHOTOS}. Step back so the whole pile or room is
+          visible — that helps us quote accurately.
         </p>
       </div>
 
@@ -97,6 +100,15 @@ export default function Step3PhotosConditions({
             <UploadIcon className="h-4 w-4" />
             Add Photos ({data.photos.length}/{MAX_PHOTOS})
           </button>
+          {remaining > 0 ? (
+            <p className="text-xs font-semibold text-yellow-600 dark:text-yellow-400">
+              {remaining} more photo{remaining === 1 ? '' : 's'} needed
+            </p>
+          ) : (
+            <p className="flex items-center gap-1 text-xs font-semibold text-green-600 dark:text-green-400">
+              <CheckIcon className="h-3.5 w-3.5" /> Minimum met
+            </p>
+          )}
         </div>
       </div>
 
@@ -138,10 +150,10 @@ export default function Step3PhotosConditions({
 
       <div>
         <label className="text-xs font-semibold uppercase tracking-[0.1em] text-ink-500 dark:text-ink-300">
-          Anything we should know? (optional)
+          Access Conditions (optional)
         </label>
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {specialConditions.map((c) => {
+          {accessConditions.map((c) => {
             const selected = data.conditions.includes(c.id);
             return (
               <button

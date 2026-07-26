@@ -10,10 +10,11 @@ export type EstimateFormData = {
   city: string;
   propertyType: string;
   photos: Photo[];
-  items: string[];
+  // itemId -> quantity. An item is "selected" when its quantity is > 0.
+  itemQuantities: Record<string, number>;
   otherDescription: string;
+  locations: string[];
   conditions: string[];
-  truckFill: string;
   dateOption: string;
   chosenDate: string;
   notes: string;
@@ -30,14 +31,15 @@ export const initialEstimateData: EstimateFormData = {
   city: '',
   propertyType: 'residential',
   photos: [],
-  items: [],
+  itemQuantities: {},
   otherDescription: '',
+  locations: [],
   conditions: [],
-  truckFill: '',
   dateOption: '',
   chosenDate: '',
   notes: '',
   referralCode: '',
 };
 
+export const MIN_PHOTOS = 3;
 export const TOTAL_STEPS = 5;

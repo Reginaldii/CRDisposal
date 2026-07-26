@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { EstimateFormData, initialEstimateData, TOTAL_STEPS } from './types';
+import { EstimateFormData, initialEstimateData, MIN_PHOTOS, TOTAL_STEPS } from './types';
 import StepIndicator from './StepIndicator';
 import Step1Items from './steps/Step1Items';
-import Step2TruckFill from './steps/Step2TruckFill';
+import Step2Locations from './steps/Step2Locations';
 import Step3PhotosConditions from './steps/Step3PhotosConditions';
 import Step4AddressTiming from './steps/Step4AddressTiming';
 import Step5ContactSubmit from './steps/Step5ContactSubmit';
@@ -16,9 +16,11 @@ import { site } from '@/lib/site';
 function isStepValid(step: number, data: EstimateFormData) {
   switch (step) {
     case 1:
-      return data.items.length > 0;
+      return Object.values(data.itemQuantities).some((q) => q > 0);
     case 2:
-      return data.truckFill !== '';
+      return data.locations.length > 0;
+    case 3:
+      return data.photos.length >= MIN_PHOTOS;
     case 4:
       return (
         data.address.trim().length > 3 &&
@@ -85,10 +87,11 @@ export default function EstimateWizard() {
           <CheckIcon className="h-7 w-7" />
         </div>
         <h3 className="mt-6 font-display text-2xl font-extrabold tracking-tight md:text-3xl">
-          Estimate request received.
+          Estimate submitted for review.
         </h3>
         <p className="mx-auto mt-3 max-w-md text-ink-500 dark:text-ink-300">
-          We&apos;ll reach out by {data.contactPreference} shortly, usually within the hour. Need it faster?
+          We&apos;ll reach out by {data.contactPreference} with your final quote — usually within
+          15–30 minutes during business hours. Need it faster?
         </p>
         <a href={site.phoneHref} className="btn-primary mt-6">
           <PhoneIcon className="h-4 w-4" />
@@ -114,7 +117,7 @@ export default function EstimateWizard() {
             transition={{ duration: 0.25, ease: 'easeOut' }}
           >
             {step === 1 && <Step1Items data={data} update={update} />}
-            {step === 2 && <Step2TruckFill data={data} update={update} />}
+            {step === 2 && <Step2Locations data={data} update={update} />}
             {step === 3 && <Step3PhotosConditions data={data} update={update} />}
             {step === 4 && <Step4AddressTiming data={data} update={update} />}
             {step === 5 && <Step5ContactSubmit data={data} update={update} />}
@@ -137,7 +140,7 @@ export default function EstimateWizard() {
           </button>
         ) : (
           <button type="button" onClick={handleSubmit} disabled={submitting || !valid} className="btn-primary flex-1 disabled:opacity-60">
-            {submitting ? 'Submitting…' : 'Get My Free Estimate'}
+            {submitting ? 'Submitting…' : 'Submit For Final Review'}
             <ArrowRightIcon className="h-4 w-4" />
           </button>
         )}

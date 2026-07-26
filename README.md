@@ -64,8 +64,9 @@ routes to two tabs in the same spreadsheet, based on submission type.
 1. Create a new Google Sheet (or use an existing one) with two tabs (right-click a sheet tab at
    the bottom → Duplicate, or the "+" button, to add a second one):
    - A tab named exactly **Submissions** — row 1 headers: `Timestamp, Type, Name, Phone, Email,
-     Address, City, ZIP, Property Type, Items, Other Description, Truck Space, Conditions,
-     Preferred Date, Notes, Photo Count, Referral Code, Message`
+     Address, City, ZIP, Property Type, Items, Other Description, Locations, Conditions, Preferred
+     Date, Notes, Photo Count, Referral Code, Message, Truck Fill, Effective Cu Yd, Weight Lbs,
+     Labor Hours, Disposal Fee, Fuel Fee, Price Low, Price High, Estimated Profit`
    - A tab named exactly **Partners** — row 1 headers: `Timestamp, Business Name, Contact Name,
      Phone, Email, Website, Business Type, Service Area, Referral Source, Notes`
 2. In that sheet, go to **Extensions → Apps Script**.
