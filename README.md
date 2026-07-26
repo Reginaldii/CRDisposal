@@ -51,6 +51,33 @@ To turn email notifications on:
 Every estimate request arrives as an email with the customer's details and any photos attached;
 every contact form message arrives the same way.
 
+## Logging submissions to a spreadsheet
+
+`/api/estimate` and `/api/contact` also send every submission's details (not photos — those stay
+in the email) to a Google Sheet, if `GOOGLE_SHEET_WEBHOOK_URL` is set. Without it, this step is
+just skipped — no error, nothing breaks.
+
+This uses a Google Apps Script Web App instead of the Google Cloud API/service-account route, since
+it's set up entirely from within Google Sheets — no separate developer console needed.
+
+1. Create a new Google Sheet (or use an existing one). In row 1, add these headers, one per
+   column: `Timestamp, Type, Name, Phone, Email, Address, City, ZIP, Property Type, Items, Other
+   Description, Truck Space, Conditions, Preferred Date, Notes, Photo Count, Referral Code,
+   Message`.
+2. In that sheet, go to **Extensions → Apps Script**.
+3. Delete whatever's in the editor and paste the contents of `docs/google-apps-script.gs` from
+   this repo.
+4. Click **Deploy → New deployment**. For "Select type," choose **Web app**.
+5. Set **Execute as: Me** and **Who has access: Anyone**, then click **Deploy**.
+6. Google will ask you to authorize it (it's your own script, on your own sheet) — click through
+   the consent screens.
+7. Copy the **Web app URL** it gives you.
+8. In the Vercel project → **Settings → Environment Variables**, add:
+   - `GOOGLE_SHEET_WEBHOOK_URL` = that Web app URL
+9. Redeploy so the new environment variable takes effect.
+
+Every estimate and contact submission after that becomes a new row automatically.
+
 ## Structure
 
 - `app/page.tsx` — the entire site: hero, services, why-choose-us, how-it-works, estimate,
