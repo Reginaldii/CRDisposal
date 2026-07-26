@@ -80,15 +80,20 @@ Every estimate and contact submission after that becomes a new row automatically
 
 ## Structure
 
-- `app/page.tsx` — the entire site: hero, services, why-choose-us, how-it-works, estimate,
-  restricted items, about, reviews, gallery, service area, contact — all one scrolling page with
-  anchor nav.
-- `app/api/estimate/` and `app/api/contact/` — form submission handlers (see email setup above).
+- `app/page.tsx` — the main site: hero, services, why-choose-us, how-it-works, estimate,
+  restricted items, about, reviews, gallery, service area, partner teaser, contact — all one
+  scrolling page with anchor nav.
+- `app/partners/page.tsx` — the Partner Program page (referral partners like realtors, property
+  managers, contractors, etc.) — a separate page on purpose, linked from the footer and a
+  homepage teaser section rather than primary nav, since it's a different audience than customers.
+- `app/api/estimate/`, `app/api/contact/`, `app/api/partner/` — form submission handlers (see
+  email setup above).
 - `components/estimate/` — the 5-step estimate wizard (items → truck fill → photos/conditions →
   address/timing → contact/submit) and its shared state/types.
+- `components/partners/` — the Partner Program page's sections and application form.
 - `components/` — shared section components (Header, Footer, Hero, ServicesGrid, Gallery, etc.)
 - `lib/` — site content and data (services, estimate wizard options, restricted items, cities,
-  testimonials).
+  partner program content, testimonials).
 
 ## Notes / before launch
 

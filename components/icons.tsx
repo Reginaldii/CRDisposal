@@ -313,3 +313,56 @@ export function NoEntryIcon(props: IconProps) {
     </svg>
   );
 }
+
+export function WrenchIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M14.5 6.5a4 4 0 0 0-5.4 5l-6.1 6.1a1.8 1.8 0 0 0 2.5 2.5L11.5 14a4 4 0 0 0 5-5.4l-2.6 2.6-2-2z" />
+    </svg>
+  );
+}
+
+export function BoltIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M13 2 4 14h6l-1 8 9-12h-6z" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function HeartIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 20s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 5c-2.5 4.5-9.5 9-9.5 9z" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function HammerIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="m14 7 3-3 4 4-3 3" />
+      <path d="m13.5 7.5-9 9a1.5 1.5 0 0 0 0 2.1l.9.9a1.5 1.5 0 0 0 2.1 0l9-9z" />
+      <path d="m10.5 10.5 3 3" />
+    </svg>
+  );
+}
+
+export function ChartIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M4 20V10M12 20V4M20 20v-7" />
+      <path d="M2 20h20" />
+    </svg>
+  );
+}
+
+export function HandshakeIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="m2 12 4-4 4 2 3-3 3 1 4 4" />
+      <path d="m8 10 5 5a1.5 1.5 0 0 0 2.1-2.1M11 13l1.8 1.8a1.5 1.5 0 0 0 2.1-2.1" />
+      <path d="m2 12 3 3 2-1M22 12l-3 3-1.5-1" />
+    </svg>
+  );
+}
