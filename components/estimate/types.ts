@@ -11,6 +11,7 @@ export type EstimateFormData = {
   propertyType: string;
   photos: Photo[];
   items: string[];
+  otherDescription: string;
   conditions: string[];
   truckFill: string;
   dateOption: string;
@@ -30,6 +31,7 @@ export const initialEstimateData: EstimateFormData = {
   propertyType: 'residential',
   photos: [],
   items: [],
+  otherDescription: '',
   conditions: [],
   truckFill: '',
   dateOption: '',

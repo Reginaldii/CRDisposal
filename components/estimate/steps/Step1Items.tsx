@@ -49,6 +49,16 @@ export default function Step1Items({
         ))}
       </div>
 
+      {data.items.includes('other') && (
+        <input
+          autoFocus
+          placeholder="What else? (e.g. old fence panels, pool liner...)"
+          value={data.otherDescription}
+          onChange={(e) => update({ otherDescription: e.target.value })}
+          className="w-full rounded-xl border border-ink-900/10 bg-white px-4 py-3 text-sm dark:border-white/10 dark:bg-ink-900"
+        />
+      )}
+
       {data.items.length > 0 && (
         <p className="text-sm font-semibold text-yellow-600 dark:text-yellow-400">
           {data.items.length} item{data.items.length === 1 ? '' : 's'} selected

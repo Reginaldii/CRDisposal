@@ -33,8 +33,12 @@ export default function ContactSection() {
               <div className="flex items-center gap-4 rounded-2xl border border-ink-900/10 bg-white p-6 dark:border-white/10 dark:bg-ink-900">
                 <MapPinIcon className="h-6 w-6 text-yellow-500" />
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">Address</p>
-                  <p className="mt-0.5 text-lg font-bold">{site.address.street}, {site.address.city}, {site.address.state} {site.address.zip}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">Service Area</p>
+                  <p className="mt-0.5 text-lg font-bold">
+                    {site.address
+                      ? `${site.address.street}, ${site.address.city}, ${site.address.state} ${site.address.zip}`
+                      : site.serviceArea}
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-4 rounded-2xl border border-ink-900/10 bg-white p-6 dark:border-white/10 dark:bg-ink-900">

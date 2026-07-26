@@ -304,3 +304,12 @@ export function CalendarIcon(props: IconProps) {
     </svg>
   );
 }
+
+export function NoEntryIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="m5.5 5.5 13 13" />
+    </svg>
+  );
+}
