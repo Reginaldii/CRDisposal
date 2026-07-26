@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { name, phone, email, address, zip, city, contactPreference, propertyType,
       itemQuantities = {}, otherDescription, locations = [], conditions = [], dateOption, chosenDate,
-      notes, photos = [], referralCode } = body ?? {};
+      notes, photos = [], referralCode, skipItemList = false, unknownItemsNote = '' } = body ?? {};
 
     if (!name || !phone || !address || !zip) {
       return NextResponse.json({ error: 'Missing required fields.' }, { status: 400 });
@@ -39,7 +39,9 @@ export async function POST(req: NextRequest) {
       `Preferred contact: ${contactPreference || '—'}`,
       `Address: ${address}, ${city || ''} ${zip}`,
       `Property type: ${propertyType || '—'}`,
-      `Items: ${itemSummary || '—'}`,
+      skipItemList
+        ? `Items: Customer skipped item list — ${unknownItemsNote || 'no description provided'}`
+        : `Items: ${itemSummary || '—'}`,
       otherDescription ? `Other item details: ${otherDescription}` : null,
       `Item locations: ${(locations as string[]).join(', ') || '—'}`,
       `Access conditions: ${(conditions as string[]).join(', ') || 'None'}`,
@@ -53,7 +55,7 @@ export async function POST(req: NextRequest) {
       `Estimated labor: ${estimate.laborHours} hrs ($${estimate.laborCost})`,
       `Estimated disposal fee: $${estimate.disposalFee}`,
       `Estimated fuel fee: $${estimate.fuelFee}`,
-      `Suggested price range: $${estimate.priceLow} - $${estimate.priceHigh}`,
+      `Suggested price range: $${estimate.priceLow} - $${estimate.priceHigh}${skipItemList ? ' (UNRELIABLE — customer skipped item list, price from photos instead)' : ''}`,
       `Estimated profit at midpoint: $${estimate.estimatedProfit}`,
     ]
       .filter((line) => line !== null)
@@ -65,9 +67,13 @@ export async function POST(req: NextRequest) {
       encoding: 'base64' as const,
     }));
 
+    const subjectEstimate = skipItemList
+      ? 'photo review requested'
+      : `est. $${estimate.priceLow}-$${estimate.priceHigh}`;
+
     const [emailSent] = await Promise.all([
       sendNotificationEmail({
-        subject: `New estimate request from ${name} — est. $${estimate.priceLow}-$${estimate.priceHigh}`,
+        subject: `New estimate request from ${name} — ${subjectEstimate}`,
         text: lines,
         attachments,
       }),
@@ -80,8 +86,10 @@ export async function POST(req: NextRequest) {
         city: city || '',
         zip,
         propertyType: propertyType || '',
-        items: itemSummary,
+        items: skipItemList ? 'Skipped — see photos/description' : itemSummary,
         otherDescription: otherDescription || '',
+        skipItemList,
+        unknownItemsNote: unknownItemsNote || '',
         locations: (locations as string[]).join(', '),
         conditions: (conditions as string[]).join(', '),
         preferredDate,

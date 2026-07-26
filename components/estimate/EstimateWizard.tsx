@@ -17,7 +17,7 @@ import { estimateJob } from '@/lib/pricingEngine';
 function isStepValid(step: number, data: EstimateFormData) {
   switch (step) {
     case 1:
-      return Object.values(data.itemQuantities).some((q) => q > 0);
+      return data.skipItemList || Object.values(data.itemQuantities).some((q) => q > 0);
     case 2:
       return data.locations.length > 0;
     case 3:
@@ -83,6 +83,7 @@ export default function EstimateWizard() {
 
   if (submitted) {
     const estimate = estimateJob({ itemQuantities: data.itemQuantities, accessConditions: data.conditions });
+    const hasEstimate = !data.skipItemList;
     return (
       <div className="rounded-3xl border border-ink-900/10 bg-white p-10 text-center shadow-lift dark:border-white/10 dark:bg-ink-800 md:p-14">
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-yellow-500/15 text-yellow-600 dark:text-yellow-400">
@@ -97,16 +98,34 @@ export default function EstimateWizard() {
         </p>
 
         <div className="mx-auto mt-6 max-w-sm rounded-2xl border border-ink-900/10 bg-ink-50 p-5 text-left text-sm dark:border-white/10 dark:bg-ink-900">
-          <p className="text-xs font-semibold uppercase tracking-[0.1em] text-ink-400">
-            Estimated Price Range
-          </p>
-          <p className="mt-1 font-display text-3xl font-extrabold tracking-tight">
-            ${estimate.priceLow} – ${estimate.priceHigh}
-          </p>
-          <p className="mt-3 text-ink-500 dark:text-ink-300">
-            This is not your final guaranteed quote — every estimate is personally reviewed
-            before pricing is finalized.
-          </p>
+          {hasEstimate ? (
+            <>
+              <p className="text-xs font-semibold uppercase tracking-[0.1em] text-ink-400">
+                Your Estimated Price
+              </p>
+              <p className="mt-1 text-ink-500 dark:text-ink-300">Most jobs like yours cost</p>
+              <p className="mt-1 font-display text-3xl font-extrabold tracking-tight">
+                ${estimate.priceLow} – ${estimate.priceHigh}
+              </p>
+              <p className="mt-3 text-ink-500 dark:text-ink-300">
+                This is not your final guaranteed quote — every estimate is personally reviewed
+                before pricing is finalized.
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-xs font-semibold uppercase tracking-[0.1em] text-ink-400">
+                Your Estimate
+              </p>
+              <p className="mt-1 font-display text-2xl font-extrabold tracking-tight">
+                We&apos;ll price it from your photos
+              </p>
+              <p className="mt-3 text-ink-500 dark:text-ink-300">
+                Since you skipped the item list, we&apos;ll personally review your photos and
+                description before sending pricing.
+              </p>
+            </>
+          )}
         </div>
 
         <a href={site.phoneHref} className="btn-primary mt-6">

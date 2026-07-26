@@ -58,8 +58,7 @@ export default function Step3PhotosConditions({
           Show us what needs to go.
         </h3>
         <p className="mt-2 text-sm text-ink-500 dark:text-ink-300">
-          At least {MIN_PHOTOS} photos, up to {MAX_PHOTOS}. Step back so the whole pile or room is
-          visible — that helps us quote accurately.
+          One photo gets you started — step back so the whole pile or room is visible.
         </p>
       </div>
 
@@ -103,13 +102,28 @@ export default function Step3PhotosConditions({
             <p className="text-xs font-semibold text-yellow-600 dark:text-yellow-400">
               {remaining} more photo{remaining === 1 ? '' : 's'} needed
             </p>
+          ) : data.photos.length === 1 ? (
+            <p className="flex items-center gap-1 text-xs font-semibold text-green-600 dark:text-green-400">
+              <CheckIcon className="h-3.5 w-3.5" /> Great! One photo is enough to start.
+            </p>
           ) : (
             <p className="flex items-center gap-1 text-xs font-semibold text-green-600 dark:text-green-400">
-              <CheckIcon className="h-3.5 w-3.5" /> Minimum met
+              <CheckIcon className="h-3.5 w-3.5" /> {data.photos.length} photos added
             </p>
           )}
         </div>
       </div>
+
+      {data.photos.length === 1 && (
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={data.photos.length >= MAX_PHOTOS}
+          className="w-full rounded-xl border border-dashed border-ink-900/20 py-2.5 text-sm font-semibold text-ink-600 hover:border-yellow-500 dark:border-white/20 dark:text-ink-300"
+        >
+          + Add More Photos <span className="font-normal text-ink-400">(recommended for a more accurate estimate)</span>
+        </button>
+      )}
 
       {(data.photos.length > 0 || busyCount > 0) && (
         <div className="grid grid-cols-5 gap-2">
