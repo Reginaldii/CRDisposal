@@ -6,7 +6,10 @@ import { itemCategories, popularItems, allItems, findItem } from '@/lib/items';
 import { jobPresets } from '@/lib/jobPresets';
 import { ChevronDownIcon, SearchIcon } from '../../icons';
 
-function QuantityChips({
+// A one-tap "+ Add" until an item is selected, then a compact -/+ stepper —
+// keeps the common case (adding one of something) to a single tap without
+// crowding the row with a bank of number buttons.
+function Stepper({
   qty,
   label,
   onChange,
@@ -15,53 +18,36 @@ function QuantityChips({
   label: string;
   onChange: (q: number) => void;
 }) {
+  if (qty <= 0) {
+    return (
+      <button
+        type="button"
+        onClick={() => onChange(1)}
+        className="rounded-full bg-yellow-500 px-3.5 py-1.5 text-xs font-bold text-ink-900"
+      >
+        + Add
+      </button>
+    );
+  }
   return (
-    <div className="flex items-center gap-1.5">
-      {[1, 2, 3, 4].map((n) => (
-        <button
-          key={n}
-          type="button"
-          aria-label={`Set ${label} quantity to ${n}`}
-          onClick={() => onChange(qty === n ? 0 : n)}
-          className={`flex h-8 w-8 items-center justify-center rounded-full border text-sm font-semibold transition-all ${
-            qty === n
-              ? 'border-yellow-500 bg-yellow-500 text-ink-900'
-              : 'border-ink-900/15 text-ink-600 dark:border-white/15 dark:text-ink-300'
-          }`}
-        >
-          {n}
-        </button>
-      ))}
-      {qty >= 5 ? (
-        <div className="flex items-center gap-1 rounded-full border border-yellow-500 bg-yellow-500/10 px-1">
-          <button
-            type="button"
-            aria-label={`Decrease ${label}`}
-            onClick={() => onChange(qty - 1)}
-            className="flex h-8 w-6 items-center justify-center text-base font-bold leading-none"
-          >
-            −
-          </button>
-          <span className="w-4 text-center text-sm font-semibold tabular-nums">{qty}</span>
-          <button
-            type="button"
-            aria-label={`Increase ${label}`}
-            onClick={() => onChange(qty + 1)}
-            className="flex h-8 w-6 items-center justify-center text-base font-bold leading-none"
-          >
-            +
-          </button>
-        </div>
-      ) : (
-        <button
-          type="button"
-          aria-label={`Set ${label} quantity to 5 or more`}
-          onClick={() => onChange(5)}
-          className="flex h-8 items-center justify-center rounded-full border border-ink-900/15 px-2 text-xs font-semibold text-ink-600 dark:border-white/15 dark:text-ink-300"
-        >
-          5+
-        </button>
-      )}
+    <div className="flex items-center gap-2">
+      <button
+        type="button"
+        aria-label={`Decrease ${label}`}
+        onClick={() => onChange(qty - 1)}
+        className="flex h-7 w-7 items-center justify-center rounded-full border border-ink-900/15 text-sm font-bold leading-none dark:border-white/15"
+      >
+        −
+      </button>
+      <span className="w-4 text-center text-sm font-semibold tabular-nums">{qty}</span>
+      <button
+        type="button"
+        aria-label={`Increase ${label}`}
+        onClick={() => onChange(qty + 1)}
+        className="flex h-7 w-7 items-center justify-center rounded-full bg-yellow-500 text-sm font-bold leading-none text-ink-900"
+      >
+        +
+      </button>
     </div>
   );
 }
@@ -197,7 +183,7 @@ export default function Step1Items({
                   <span className="text-sm font-medium text-ink-800 dark:text-ink-100">
                     {item.label}
                   </span>
-                  <QuantityChips qty={qty} label={item.label} onChange={(q) => setQuantity(item.id, q)} />
+                  <Stepper qty={qty} label={item.label} onChange={(q) => setQuantity(item.id, q)} />
                 </div>
               );
             })
@@ -249,35 +235,9 @@ export default function Step1Items({
                     <span className="text-xs font-medium text-ink-800 dark:text-ink-100">
                       {p.label ?? item.label}
                     </span>
-                    {qty > 0 ? (
-                      <div className="mt-1 flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          aria-label={`Decrease ${item.label}`}
-                          onClick={() => setQuantity(p.id, qty - 1)}
-                          className="flex h-6 w-6 items-center justify-center rounded-full border border-ink-900/15 text-sm font-bold leading-none dark:border-white/15"
-                        >
-                          −
-                        </button>
-                        <span className="w-4 text-center text-xs font-semibold tabular-nums">{qty}</span>
-                        <button
-                          type="button"
-                          aria-label={`Increase ${item.label}`}
-                          onClick={() => setQuantity(p.id, qty + 1)}
-                          className="flex h-6 w-6 items-center justify-center rounded-full bg-yellow-500 text-sm font-bold leading-none text-ink-900"
-                        >
-                          +
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => setQuantity(p.id, 1)}
-                        className="mt-1 rounded-full bg-yellow-500 px-3 py-1 text-xs font-bold text-ink-900"
-                      >
-                        + Add
-                      </button>
-                    )}
+                    <div className="mt-1">
+                      <Stepper qty={qty} label={item.label} onChange={(q) => setQuantity(p.id, q)} />
+                    </div>
                   </div>
                 );
               })}
@@ -323,7 +283,7 @@ export default function Step1Items({
                             <span className="text-sm font-medium text-ink-800 dark:text-ink-100">
                               {item.label}
                             </span>
-                            <QuantityChips
+                            <Stepper
                               qty={qty}
                               label={item.label}
                               onChange={(q) => setQuantity(item.id, q)}
