@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from './Logo';
 import { primaryNav, site } from '@/lib/site';
 import { MenuIcon, CloseIcon, PhoneIcon, MessageIcon, StarIcon } from './icons';
 
 export default function Header() {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState('/#home');
@@ -21,10 +23,15 @@ export default function Header() {
 
   useEffect(() => {
     // Anchor-based scrollspy only makes sense on the homepage — on other
-    // pages (e.g. /partners) none of these ids exist, so skip it there.
-    if (window.location.pathname !== '/') return;
+    // pages (e.g. /partners), just highlight whichever nav item matches
+    // the current path instead.
+    if (pathname !== '/') {
+      setActive(pathname);
+      return;
+    }
 
     const sections = primaryNav
+      .filter((item) => item.href.startsWith('/#'))
       .map((item) => document.querySelector(item.href.replace('/#', '#')))
       .filter((el): el is Element => !!el);
 
@@ -40,7 +47,7 @@ export default function Header() {
 
     sections.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     document.documentElement.style.overflow = open ? 'hidden' : '';

@@ -35,12 +35,9 @@ export default function Footer() {
             <ul className="mt-4 space-y-2.5 text-sm text-ink-200">
               {primaryNav.map((i) => (
                 <li key={i.href}>
-                  <a href={i.href} className="hover:text-yellow-400">{i.label}</a>
+                  <Link href={i.href} className="hover:text-yellow-400">{i.label}</Link>
                 </li>
               ))}
-              <li>
-                <Link href="/partners" className="hover:text-yellow-400">Partner Program</Link>
-              </li>
             </ul>
           </div>
 

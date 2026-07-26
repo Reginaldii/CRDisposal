@@ -31,4 +31,5 @@ export const primaryNav = [
   { label: 'Reviews', href: '/#reviews' },
   { label: 'Gallery', href: '/#gallery' },
   { label: 'Contact', href: '/#contact' },
+  { label: 'Partners', href: '/partners' },
 ];

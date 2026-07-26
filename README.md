@@ -53,17 +53,21 @@ every contact form message arrives the same way.
 
 ## Logging submissions to a spreadsheet
 
-`/api/estimate` and `/api/contact` also send every submission's details (not photos — those stay
-in the email) to a Google Sheet, if `GOOGLE_SHEET_WEBHOOK_URL` is set. Without it, this step is
-just skipped — no error, nothing breaks.
+`/api/estimate`, `/api/contact`, and `/api/partner` also send every submission's details (not
+photos — those stay in the email) to a Google Sheet, if `GOOGLE_SHEET_WEBHOOK_URL` is set. Without
+it, this step is just skipped — no error, nothing breaks.
 
 This uses a Google Apps Script Web App instead of the Google Cloud API/service-account route, since
-it's set up entirely from within Google Sheets — no separate developer console needed.
+it's set up entirely from within Google Sheets — no separate developer console needed. One Web App
+routes to two tabs in the same spreadsheet, based on submission type.
 
-1. Create a new Google Sheet (or use an existing one). In row 1, add these headers, one per
-   column: `Timestamp, Type, Name, Phone, Email, Address, City, ZIP, Property Type, Items, Other
-   Description, Truck Space, Conditions, Preferred Date, Notes, Photo Count, Referral Code,
-   Message`.
+1. Create a new Google Sheet (or use an existing one) with two tabs (right-click a sheet tab at
+   the bottom → Duplicate, or the "+" button, to add a second one):
+   - A tab named exactly **Submissions** — row 1 headers: `Timestamp, Type, Name, Phone, Email,
+     Address, City, ZIP, Property Type, Items, Other Description, Truck Space, Conditions,
+     Preferred Date, Notes, Photo Count, Referral Code, Message`
+   - A tab named exactly **Partners** — row 1 headers: `Timestamp, Business Name, Contact Name,
+     Phone, Email, Website, Business Type, Service Area, Referral Source, Notes`
 2. In that sheet, go to **Extensions → Apps Script**.
 3. Delete whatever's in the editor and paste the contents of `docs/google-apps-script.gs` from
    this repo.
@@ -76,7 +80,14 @@ it's set up entirely from within Google Sheets — no separate developer console
    - `GOOGLE_SHEET_WEBHOOK_URL` = that Web app URL
 9. Redeploy so the new environment variable takes effect.
 
-Every estimate and contact submission after that becomes a new row automatically.
+Every estimate/contact submission becomes a new row in **Submissions**; every partner application
+becomes a new row in **Partners**.
+
+**If you ever update `docs/google-apps-script.gs` later** (or already deployed it before these two
+tabs existed): don't create another "New deployment," since that generates a different URL and
+you'd have to update the Vercel environment variable again. Instead, in the Apps Script editor go
+to **Deploy → Manage deployments**, click the pencil/edit icon on the existing deployment, set
+**Version: New version**, and click **Deploy** — same URL, updated code.
 
 ## Structure
 
