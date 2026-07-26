@@ -19,6 +19,7 @@ export default function Step5ContactSubmit({
     });
 
   const estimate = estimateJob({ itemQuantities: data.itemQuantities, accessConditions: data.conditions });
+  const hasEstimate = !data.skipItemList;
 
   return (
     <div className="space-y-6">
@@ -83,21 +84,52 @@ export default function Step5ContactSubmit({
       <div className="rounded-2xl border border-ink-900/10 bg-ink-50 p-5 text-sm dark:border-white/10 dark:bg-ink-900">
         <p className="flex items-start gap-2 font-semibold leading-relaxed">
           <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-yellow-600 dark:text-yellow-400" />
-          {itemLabels.length ? itemLabels.join(', ') : 'No items selected'}
+          {hasEstimate
+            ? itemLabels.length
+              ? itemLabels.join(', ')
+              : 'No items selected'
+            : 'Full photo review requested'}
         </p>
 
         <div className="mt-4 border-t border-ink-900/10 pt-4 dark:border-white/10">
-          <p className="text-xs font-semibold uppercase tracking-[0.1em] text-ink-400">
-            Estimated Price Range
-          </p>
-          <p className="mt-1 font-display text-3xl font-extrabold tracking-tight">
-            ${estimate.priceLow} – ${estimate.priceHigh}
-          </p>
-          <p className="mt-3 text-ink-500 dark:text-ink-300">
-            Based on the information provided, similar jobs typically fall within this price
-            range. This is not your final guaranteed quote — every estimate is personally
-            reviewed before pricing is finalized.
-          </p>
+          {hasEstimate ? (
+            <>
+              <p className="text-xs font-semibold uppercase tracking-[0.1em] text-ink-400">
+                Your Estimated Price
+              </p>
+              <p className="mt-1 text-ink-500 dark:text-ink-300">Most jobs like yours cost</p>
+              <p className="mt-1 font-display text-3xl font-extrabold tracking-tight">
+                ${estimate.priceLow} – ${estimate.priceHigh}
+              </p>
+              <ul className="mt-3 space-y-1.5 text-ink-500 dark:text-ink-300">
+                <li className="flex items-center gap-1.5">
+                  <CheckIcon className="h-3.5 w-3.5 shrink-0 text-yellow-600 dark:text-yellow-400" />
+                  Based on your item list
+                </li>
+                <li className="flex items-center gap-1.5">
+                  <CheckIcon className="h-3.5 w-3.5 shrink-0 text-yellow-600 dark:text-yellow-400" />
+                  Based on access conditions (stairs, carry distance, etc.)
+                </li>
+                <li className="flex items-center gap-1.5">
+                  <CheckIcon className="h-3.5 w-3.5 shrink-0 text-yellow-600 dark:text-yellow-400" />
+                  Final quote personally reviewed before approval
+                </li>
+              </ul>
+            </>
+          ) : (
+            <>
+              <p className="text-xs font-semibold uppercase tracking-[0.1em] text-ink-400">
+                Your Estimate
+              </p>
+              <p className="mt-1 font-display text-2xl font-extrabold tracking-tight">
+                We&apos;ll price it from your photos
+              </p>
+              <p className="mt-3 text-ink-500 dark:text-ink-300">
+                Since you skipped the item list, we&apos;ll personally review your photos and
+                description before sending pricing.
+              </p>
+            </>
+          )}
           <p className="mt-3 font-semibold text-ink-700 dark:text-ink-200">
             Expected response time: 15–30 minutes during business hours.
           </p>

@@ -13,6 +13,10 @@ export type EstimateFormData = {
   // itemId -> quantity. An item is "selected" when its quantity is > 0.
   itemQuantities: Record<string, number>;
   otherDescription: string;
+  // True when the customer skips the item list entirely and relies on
+  // photos (+ optional note) instead — see Step1Items.
+  skipItemList: boolean;
+  unknownItemsNote: string;
   locations: string[];
   conditions: string[];
   dateOption: string;
@@ -33,6 +37,8 @@ export const initialEstimateData: EstimateFormData = {
   photos: [],
   itemQuantities: {},
   otherDescription: '',
+  skipItemList: false,
+  unknownItemsNote: '',
   locations: [],
   conditions: [],
   dateOption: '',
@@ -41,5 +47,5 @@ export const initialEstimateData: EstimateFormData = {
   referralCode: '',
 };
 
-export const MIN_PHOTOS = 3;
+export const MIN_PHOTOS = 1;
 export const TOTAL_STEPS = 5;

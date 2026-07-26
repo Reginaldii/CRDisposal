@@ -357,6 +357,15 @@ export function ChartIcon(props: IconProps) {
   );
 }
 
+export function SearchIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="10.5" cy="10.5" r="6.5" />
+      <path d="m20 20-4.35-4.35" />
+    </svg>
+  );
+}
+
 export function HandshakeIcon(props: IconProps) {
   return (
     <svg {...base} {...props}>

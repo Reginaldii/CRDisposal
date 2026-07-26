@@ -28,6 +28,7 @@ export const itemCategories: ItemCategory[] = [
       { id: 'chair', label: 'Chair', cuYd: 0.5, lbs: 25 },
       { id: 'desk', label: 'Desk', cuYd: 1.5, lbs: 80 },
       { id: 'cabinet', label: 'Cabinet', cuYd: 2, lbs: 100, heavy: true },
+      { id: 'sectional', label: 'Sectional Sofa', cuYd: 5, lbs: 200, heavy: true },
     ],
   },
   {
@@ -72,6 +73,7 @@ export const itemCategories: ItemCategory[] = [
       { id: 'yard-bag', label: 'Bag (leaves/brush)', cuYd: 0.33, lbs: 20 },
       { id: 'branch-bundle', label: 'Branch Bundle', cuYd: 0.5, lbs: 30 },
       { id: 'small-tree', label: 'Small Tree / Stump', cuYd: 1, lbs: 100, heavy: true },
+      { id: 'trash-bags', label: 'Trash Bags (bundle of 5)', cuYd: 0.5, lbs: 40 },
     ],
   },
   {
@@ -123,3 +125,17 @@ export const allItems: ItemDef[] = itemCategories.flatMap((c) => c.items);
 export function findItem(id: string): ItemDef | undefined {
   return allItems.find((i) => i.id === id);
 }
+
+// A curated shortlist shown above the full catalog — most jobs only need
+// these, so most customers never have to open a category or search.
+export const popularItems: { id: string; emoji: string; label?: string }[] = [
+  { id: 'sofa', emoji: '🛋️' },
+  { id: 'mattress', emoji: '🛏️' },
+  { id: 'dresser', emoji: '🪑' },
+  { id: 'refrigerator', emoji: '🧊' },
+  { id: 'washer', emoji: '🧺' },
+  { id: 'sectional', emoji: '🛋️' },
+  { id: 'box-medium', emoji: '📦', label: 'Boxes' },
+  { id: 'trash-bags', emoji: '🗑️' },
+  { id: 'yard-bag', emoji: '🌿', label: 'Yard Waste' },
+];

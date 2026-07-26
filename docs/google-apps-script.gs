@@ -44,6 +44,8 @@ function doPost(e) {
       data.propertyType || '',
       data.items || '',
       data.otherDescription || '',
+      data.skipItemList ? 'Yes' : 'No',
+      data.unknownItemsNote || '',
       data.locations || '',
       data.conditions || '',
       data.preferredDate || '',
