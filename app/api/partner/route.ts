@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendNotificationEmail } from '@/lib/sendEmail';
+import { appendToSheet } from '@/lib/sendToSheet';
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,10 +23,24 @@ export async function POST(req: NextRequest) {
       `Notes: ${notes || '—'}`,
     ].join('\n');
 
-    const sent = await sendNotificationEmail({
-      subject: `New Partner Program application from ${businessName}`,
-      text,
-    });
+    const [sent] = await Promise.all([
+      sendNotificationEmail({
+        subject: `New Partner Program application from ${businessName}`,
+        text,
+      }),
+      appendToSheet({
+        type: 'Partner',
+        businessName,
+        contactName,
+        phone,
+        email,
+        website: website || '',
+        businessType: businessType || '',
+        serviceArea,
+        referralSource: referralSource || '',
+        notes: notes || '',
+      }),
+    ]);
 
     if (!sent) {
       console.log('New partner application (email not configured):', body);
