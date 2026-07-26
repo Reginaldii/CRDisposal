@@ -19,15 +19,6 @@ export const services: Service[] = [
   { id: 'rental', label: 'Rental Property Cleanouts', icon: 'key' },
 ];
 
-// Not offered yet — shown as a small "what's next" teaser so the site's
-// architecture doesn't need to change when these launch.
-export const futureServices: Service[] = [
-  { id: 'dumpsters', label: 'Dumpster Rentals', icon: 'truck' },
-  { id: 'hooklift', label: 'Hooklift Truck Service', icon: 'truck-2' },
-  { id: 'commercial-contracts', label: 'Commercial Contracts', icon: 'building2' },
-  { id: 'college', label: 'College Move-Out Cleanouts', icon: 'box' },
-];
-
 export const whyChooseUs = [
   { label: 'Same Day Service', icon: 'clock' },
   { label: 'Upfront Pricing', icon: 'tag' },
