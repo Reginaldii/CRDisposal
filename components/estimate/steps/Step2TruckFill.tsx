@@ -2,7 +2,7 @@ import { EstimateFormData } from '../types';
 import { truckFillLevels } from '@/lib/estimate';
 import TruckIllustration from '../TruckIllustration';
 
-export default function Step6TruckFill({
+export default function Step2TruckFill({
   data,
   update,
 }: {

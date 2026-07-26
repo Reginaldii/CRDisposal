@@ -38,4 +38,4 @@ export const initialEstimateData: EstimateFormData = {
   referralCode: '',
 };
 
-export const TOTAL_STEPS = 9;
+export const TOTAL_STEPS = 5;

@@ -4,11 +4,12 @@ import { useRef, useState } from 'react';
 import { EstimateFormData, Photo } from '../types';
 import { compressImage } from '@/lib/compressImage';
 import { site } from '@/lib/site';
-import { CameraIcon, UploadIcon, CloseIcon, MessageIcon } from '../../icons';
+import { specialConditions } from '@/lib/estimate';
+import { CameraIcon, UploadIcon, CloseIcon, MessageIcon, CheckIcon } from '../../icons';
 
 const MAX_PHOTOS = 20;
 
-export default function Step3Photos({
+export default function Step3PhotosConditions({
   data,
   update,
 }: {
@@ -43,14 +44,19 @@ export default function Step3Photos({
     update({ photos: data.photos.filter((p) => p.id !== id) });
   }
 
+  function toggleCondition(id: string) {
+    const has = data.conditions.includes(id);
+    update({ conditions: has ? data.conditions.filter((c) => c !== id) : [...data.conditions, id] });
+  }
+
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div>
         <h3 className="font-display text-2xl font-extrabold tracking-tight md:text-3xl">
-          Show us what needs to go.
+          Add photos &amp; details.
         </h3>
         <p className="mt-2 text-sm text-ink-500 dark:text-ink-300">
-          Optional, but photos help us quote accurately. Up to {MAX_PHOTOS}.
+          Both totally optional — skip straight to Continue if you&apos;d rather not.
         </p>
       </div>
 
@@ -65,7 +71,7 @@ export default function Step3Photos({
           setDragOver(false);
           handleFiles(e.dataTransfer.files);
         }}
-        className={`rounded-2xl border-2 border-dashed p-8 text-center transition-colors ${
+        className={`rounded-2xl border-2 border-dashed p-6 text-center transition-colors ${
           dragOver ? 'border-yellow-500 bg-yellow-500/5' : 'border-ink-900/15 dark:border-white/15'
         }`}
       >
@@ -78,13 +84,10 @@ export default function Step3Photos({
           className="hidden"
           onChange={(e) => handleFiles(e.target.files)}
         />
-        <div className="flex flex-col items-center gap-3">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-yellow-500/12 text-yellow-600 dark:text-yellow-400">
-            <CameraIcon className="h-7 w-7" />
+        <div className="flex flex-col items-center gap-2.5">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-yellow-500/12 text-yellow-600 dark:text-yellow-400">
+            <CameraIcon className="h-6 w-6" />
           </div>
-          <p className="text-sm font-medium text-ink-600 dark:text-ink-300">
-            Drag and drop, or tap to take/upload photos
-          </p>
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
@@ -98,7 +101,7 @@ export default function Step3Photos({
       </div>
 
       {(data.photos.length > 0 || busyCount > 0) && (
-        <div className="grid grid-cols-4 gap-2 sm:grid-cols-5">
+        <div className="grid grid-cols-5 gap-2">
           {data.photos.map((p) => (
             <div key={p.id} className="group relative aspect-square overflow-hidden rounded-lg">
               {/* Compressed data URLs can't go through next/image's optimizer */}
@@ -127,11 +130,43 @@ export default function Step3Photos({
 
       <a
         href={site.smsHref}
-        className="flex items-center justify-center gap-2 rounded-xl border border-ink-900/10 py-3 text-sm font-semibold text-ink-600 hover:border-yellow-500 dark:border-white/10 dark:text-ink-300"
+        className="flex items-center justify-center gap-2 rounded-xl border border-ink-900/10 py-2.5 text-sm font-semibold text-ink-600 hover:border-yellow-500 dark:border-white/10 dark:text-ink-300"
       >
         <MessageIcon className="h-4 w-4 text-yellow-500" />
         Prefer to text photos instead? {site.phone}
       </a>
+
+      <div>
+        <label className="text-xs font-semibold uppercase tracking-[0.1em] text-ink-500 dark:text-ink-300">
+          Anything we should know? (optional)
+        </label>
+        <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {specialConditions.map((c) => {
+            const selected = data.conditions.includes(c.id);
+            return (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => toggleCondition(c.id)}
+                className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all ${
+                  selected
+                    ? 'border-yellow-500 bg-yellow-500/10 text-ink-900 dark:text-white'
+                    : 'border-ink-900/10 text-ink-700 hover:border-ink-900/25 dark:border-white/10 dark:text-ink-200'
+                }`}
+              >
+                <span
+                  className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border ${
+                    selected ? 'border-yellow-500 bg-yellow-500' : 'border-ink-900/25 dark:border-white/25'
+                  }`}
+                >
+                  {selected && <CheckIcon className="h-3 w-3 text-ink-900" />}
+                </span>
+                {c.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }

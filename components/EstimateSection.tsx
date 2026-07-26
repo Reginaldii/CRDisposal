@@ -1,5 +1,8 @@
 import { Suspense } from 'react';
 import EstimateWizard from './estimate/EstimateWizard';
+import { CheckIcon } from './icons';
+
+const points = ['Free Estimates', 'Upfront Pricing', 'No Hidden Fees', 'Pay Only For What We Remove'];
 
 export default function EstimateSection() {
   return (
@@ -10,6 +13,14 @@ export default function EstimateSection() {
           <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl">
             From &ldquo;I have junk&rdquo; to booked in under two minutes.
           </h2>
+          <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-ink-500 dark:text-ink-300">
+            {points.map((p) => (
+              <li key={p} className="flex items-center gap-1.5">
+                <CheckIcon className="h-4 w-4 text-yellow-500" />
+                {p}
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div className="mx-auto mt-12 max-w-2xl">
