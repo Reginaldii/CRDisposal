@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import PageHero from '@/components/PageHero';
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
@@ -8,33 +7,34 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <>
-      <PageHero eyebrow="Legal" title="Terms of Service">
-        <></>
-      </PageHero>
-      <section className="section bg-white dark:bg-ink-900">
-        <div className="container-x max-w-3xl space-y-6 text-[15px] leading-relaxed text-ink-600 dark:text-ink-300">
+    <section className="section bg-white dark:bg-ink-900">
+      <div className="container-x max-w-3xl">
+        <p className="eyebrow">Legal</p>
+        <h1 className="mt-4 font-display text-4xl font-extrabold tracking-tight sm:text-5xl">
+          Terms of Service
+        </h1>
+        <div className="mt-10 space-y-6 text-[15px] leading-relaxed text-ink-600 dark:text-ink-300">
           <p>
-            By requesting a quote or booking service with CR Disposal, you agree to provide
-            accurate delivery and contact information and to keep the rented container accessible
-            for delivery, exchange, and pickup for the duration of your rental period.
+            By requesting an estimate or booking service with CR Disposal, you agree to provide
+            accurate contact and address information and to ensure reasonable access to the items
+            being removed for the scheduled appointment window.
           </p>
           <p>
-            Rental pricing includes delivery, pickup, and disposal up to the tonnage allowance
-            listed for your container size. Additional charges may apply for excess weight,
-            extended rental periods, or prohibited materials placed in the container.
+            Estimates provided online, by phone, or by text are non-binding and may be adjusted
+            once our crew sees the job in person, based on actual volume, weight, access, and
+            site conditions.
           </p>
           <p>
-            Prohibited items include hazardous waste, tires, batteries, paint, chemicals,
-            refrigerants, and asbestos. CR Disposal reserves the right to refuse pickup or apply
-            additional fees if prohibited materials are found in a container.
+            CR Disposal does not accept hazardous waste, chemicals, paint, or other regulated
+            materials without prior arrangement, and reserves the right to decline items that
+            cannot be legally or safely disposed of.
           </p>
           <p>
-            Quotes provided through our online calculator are estimates and may be adjusted based
-            on actual weight, material type, and site conditions confirmed at booking.
+            Final pricing is confirmed with the customer before any work begins — you will never
+            be charged for removal you haven&apos;t approved.
           </p>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }

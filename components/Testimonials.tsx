@@ -16,12 +16,12 @@ export default function Testimonials() {
   const t = testimonials[index];
 
   return (
-    <section className="section bg-white dark:bg-ink-900">
+    <section id="reviews" className="section bg-white dark:bg-ink-900 scroll-mt-16">
       <div className="container-x">
         <div className="flex flex-col items-center text-center">
           <p className="eyebrow">Reviews</p>
           <h2 className="mt-4 max-w-xl font-display text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl">
-            Contractors and homeowners trust CR Disposal.
+            Homeowners and property managers trust CR Disposal.
           </h2>
           <div className="mt-6 flex items-center gap-2">
             {Array.from({ length: 5 }).map((_, i) => (
