@@ -5,30 +5,29 @@ import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EstimateFormData, initialEstimateData, TOTAL_STEPS } from './types';
 import StepIndicator from './StepIndicator';
-import Step1Contact from './steps/Step1Contact';
-import Step2Address from './steps/Step2Address';
-import Step3Photos from './steps/Step3Photos';
-import Step4Items from './steps/Step4Items';
-import Step5Conditions from './steps/Step5Conditions';
-import Step6TruckFill from './steps/Step6TruckFill';
-import Step7Date from './steps/Step7Date';
-import Step8Notes from './steps/Step8Notes';
-import Step9Review from './steps/Step9Review';
+import Step1Items from './steps/Step1Items';
+import Step2TruckFill from './steps/Step2TruckFill';
+import Step3PhotosConditions from './steps/Step3PhotosConditions';
+import Step4AddressTiming from './steps/Step4AddressTiming';
+import Step5ContactSubmit from './steps/Step5ContactSubmit';
 import { ArrowRightIcon, CheckIcon, PhoneIcon } from '../icons';
 import { site } from '@/lib/site';
 
 function isStepValid(step: number, data: EstimateFormData) {
   switch (step) {
     case 1:
-      return data.name.trim().length > 1 && data.phone.trim().length >= 7;
-    case 2:
-      return data.address.trim().length > 3 && data.zip.trim().length === 5;
-    case 4:
       return data.items.length > 0;
-    case 6:
+    case 2:
       return data.truckFill !== '';
-    case 7:
-      return data.dateOption !== '' && (data.dateOption !== 'choose' || data.chosenDate !== '');
+    case 4:
+      return (
+        data.address.trim().length > 3 &&
+        data.zip.trim().length === 5 &&
+        data.dateOption !== '' &&
+        (data.dateOption !== 'choose' || data.chosenDate !== '')
+      );
+    case 5:
+      return data.name.trim().length > 1 && data.phone.trim().length >= 7;
     default:
       return true;
   }
@@ -61,6 +60,7 @@ export default function EstimateWizard() {
   }
 
   async function handleSubmit() {
+    if (!isStepValid(TOTAL_STEPS, data)) return;
     setError('');
     setSubmitting(true);
     try {
@@ -104,7 +104,7 @@ export default function EstimateWizard() {
     <div className="rounded-3xl border border-ink-900/10 bg-white p-6 shadow-lift dark:border-white/10 dark:bg-ink-800 sm:p-8 md:p-10">
       <StepIndicator step={step} />
 
-      <div className="mt-8 min-h-[340px]">
+      <div className="mt-8 min-h-[300px]">
         <AnimatePresence mode="wait">
           <motion.div
             key={step}
@@ -113,15 +113,11 @@ export default function EstimateWizard() {
             exit={{ opacity: 0, x: -16 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
           >
-            {step === 1 && <Step1Contact data={data} update={update} />}
-            {step === 2 && <Step2Address data={data} update={update} />}
-            {step === 3 && <Step3Photos data={data} update={update} />}
-            {step === 4 && <Step4Items data={data} update={update} />}
-            {step === 5 && <Step5Conditions data={data} update={update} />}
-            {step === 6 && <Step6TruckFill data={data} update={update} />}
-            {step === 7 && <Step7Date data={data} update={update} />}
-            {step === 8 && <Step8Notes data={data} update={update} />}
-            {step === 9 && <Step9Review data={data} />}
+            {step === 1 && <Step1Items data={data} update={update} />}
+            {step === 2 && <Step2TruckFill data={data} update={update} />}
+            {step === 3 && <Step3PhotosConditions data={data} update={update} />}
+            {step === 4 && <Step4AddressTiming data={data} update={update} />}
+            {step === 5 && <Step5ContactSubmit data={data} update={update} />}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -140,7 +136,7 @@ export default function EstimateWizard() {
             <ArrowRightIcon className="h-4 w-4" />
           </button>
         ) : (
-          <button type="button" onClick={handleSubmit} disabled={submitting} className="btn-primary flex-1 disabled:opacity-60">
+          <button type="button" onClick={handleSubmit} disabled={submitting || !valid} className="btn-primary flex-1 disabled:opacity-60">
             {submitting ? 'Submitting…' : 'Get My Free Estimate'}
             <ArrowRightIcon className="h-4 w-4" />
           </button>

@@ -1,7 +1,7 @@
 import { EstimateFormData } from '../types';
 import { itemCategories } from '@/lib/estimate';
 
-export default function Step4Items({
+export default function Step1Items({
   data,
   update,
 }: {
@@ -17,9 +17,9 @@ export default function Step4Items({
     <div className="space-y-6">
       <div>
         <h3 className="font-display text-2xl font-extrabold tracking-tight md:text-3xl">
-          What needs to be removed?
+          What needs to go?
         </h3>
-        <p className="mt-2 text-sm text-ink-500 dark:text-ink-300">Select everything that applies.</p>
+        <p className="mt-2 text-sm text-ink-500 dark:text-ink-300">Tap everything that applies — no typing needed.</p>
       </div>
 
       <div className="max-h-[420px] space-y-6 overflow-y-auto pr-1">
