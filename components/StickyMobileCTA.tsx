@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { site } from '@/lib/site';
 import { PhoneIcon, MessageIcon, CalendarIcon } from './icons';
 
@@ -20,13 +21,13 @@ export default function StickyMobileCTA() {
         <MessageIcon className="h-5 w-5" />
         Text
       </a>
-      <a
-        href="#estimate"
+      <Link
+        href="/#estimate"
         className="flex flex-1 flex-col items-center gap-0.5 bg-yellow-500 py-3 text-xs font-bold text-ink-900"
       >
         <CalendarIcon className="h-5 w-5" />
         Estimate
-      </a>
+      </Link>
     </div>
   );
 }

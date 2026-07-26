@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from './Logo';
 import { primaryNav, site } from '@/lib/site';
@@ -9,7 +10,7 @@ import { MenuIcon, CloseIcon, PhoneIcon, MessageIcon, StarIcon } from './icons';
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState('#home');
+  const [active, setActive] = useState('/#home');
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -19,15 +20,19 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
+    // Anchor-based scrollspy only makes sense on the homepage — on other
+    // pages (e.g. /partners) none of these ids exist, so skip it there.
+    if (window.location.pathname !== '/') return;
+
     const sections = primaryNav
-      .map((item) => document.querySelector(item.href))
+      .map((item) => document.querySelector(item.href.replace('/#', '#')))
       .filter((el): el is Element => !!el);
 
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries.filter((e) => e.isIntersecting);
         if (visible.length > 0) {
-          setActive(`#${visible[0].target.id}`);
+          setActive(`/#${visible[0].target.id}`);
         }
       },
       { rootMargin: '-40% 0px -55% 0px' }
@@ -54,7 +59,7 @@ export default function Header() {
 
         <nav className="hidden xl:flex items-center gap-6">
           {primaryNav.map((item) => (
-            <a
+            <Link
               key={item.href}
               href={item.href}
               className={`text-[13.5px] font-medium tracking-tight transition-colors hover:text-yellow-600 dark:hover:text-yellow-400 ${
@@ -62,7 +67,7 @@ export default function Header() {
               }`}
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -75,9 +80,9 @@ export default function Header() {
             <PhoneIcon className="h-4 w-4 text-yellow-500" />
             {site.phone}
           </a>
-          <a href="#estimate" className="btn-primary">
+          <Link href="/#estimate" className="btn-primary">
             Get Free Estimate
-          </a>
+          </Link>
         </div>
 
         <button
@@ -100,14 +105,14 @@ export default function Header() {
           >
             <div className="container-x flex flex-col gap-1 py-5">
               {primaryNav.map((item) => (
-                <a
+                <Link
                   key={item.href}
                   href={item.href}
                   onClick={() => setOpen(false)}
                   className="rounded-lg px-3 py-3 text-base font-medium text-ink-800 hover:bg-ink-50 dark:text-ink-100 dark:hover:bg-ink-800"
                 >
                   {item.label}
-                </a>
+                </Link>
               ))}
               <div className="mt-4 flex flex-col gap-3">
                 <a href={site.phoneHref} className="btn-dark w-full">
@@ -118,9 +123,9 @@ export default function Header() {
                   <MessageIcon className="h-4 w-4" />
                   Text Photos
                 </a>
-                <a href="#estimate" onClick={() => setOpen(false)} className="btn-primary w-full">
+                <Link href="/#estimate" onClick={() => setOpen(false)} className="btn-primary w-full">
                   Get Free Estimate
-                </a>
+                </Link>
               </div>
             </div>
           </motion.div>

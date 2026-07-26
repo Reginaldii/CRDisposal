@@ -38,6 +38,9 @@ export default function Footer() {
                   <a href={i.href} className="hover:text-yellow-400">{i.label}</a>
                 </li>
               ))}
+              <li>
+                <Link href="/partners" className="hover:text-yellow-400">Partner Program</Link>
+              </li>
             </ul>
           </div>
 

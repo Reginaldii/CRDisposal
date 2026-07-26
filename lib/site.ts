@@ -20,12 +20,15 @@ export const site = {
   url: 'https://www.crdisposal.com',
 };
 
+// Prefixed with "/" so these still work correctly from pages other than
+// the homepage (e.g. /partners) — the browser navigates home, then jumps
+// to the anchor. On the homepage itself this is still just a hash jump.
 export const primaryNav = [
-  { label: 'Home', href: '#home' },
-  { label: 'Services', href: '#services' },
-  { label: 'Estimate', href: '#estimate' },
-  { label: 'About', href: '#about' },
-  { label: 'Reviews', href: '#reviews' },
-  { label: 'Gallery', href: '#gallery' },
-  { label: 'Contact', href: '#contact' },
+  { label: 'Home', href: '/#home' },
+  { label: 'Services', href: '/#services' },
+  { label: 'Estimate', href: '/#estimate' },
+  { label: 'About', href: '/#about' },
+  { label: 'Reviews', href: '/#reviews' },
+  { label: 'Gallery', href: '/#gallery' },
+  { label: 'Contact', href: '/#contact' },
 ];
