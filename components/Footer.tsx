@@ -12,8 +12,7 @@ export default function Footer() {
           <div className="md:col-span-4">
             <Logo />
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-ink-300">
-              Premium dumpster rentals and hauling for contractors and homeowners across the
-              Lehigh Valley. Licensed, insured, locally owned.
+              Locally owned junk removal for the Lehigh Valley. Fast, affordable, upfront pricing.
             </p>
             <div className="mt-6 flex flex-col gap-3 text-sm text-ink-200">
               <a href={site.phoneHref} className="flex items-center gap-2.5 hover:text-yellow-400">
@@ -29,40 +28,24 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="md:col-span-2">
-            <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-ink-400">Company</h4>
+          <div className="md:col-span-3">
+            <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-ink-400">Menu</h4>
             <ul className="mt-4 space-y-2.5 text-sm text-ink-200">
-              {primaryNav.slice(0, 5).map((i) => (
+              {primaryNav.map((i) => (
                 <li key={i.href}>
-                  <Link href={i.href} className="hover:text-yellow-400">{i.label}</Link>
+                  <a href={i.href} className="hover:text-yellow-400">{i.label}</a>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="md:col-span-2">
-            <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-ink-400">Resources</h4>
-            <ul className="mt-4 space-y-2.5 text-sm text-ink-200">
-              <li><Link href="/about" className="hover:text-yellow-400">About</Link></li>
-              <li><Link href="/faq" className="hover:text-yellow-400">FAQ</Link></li>
-              <li><Link href="/pricing" className="hover:text-yellow-400">Pricing</Link></li>
-              <li><Link href="/quote" className="hover:text-yellow-400">Instant Quote</Link></li>
-              <li><Link href="/contact" className="hover:text-yellow-400">Contact</Link></li>
-            </ul>
-          </div>
-
-          <div className="md:col-span-4">
-            <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-ink-400">Service Areas</h4>
-            <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm text-ink-200">
-              {cities.slice(0, 8).map((c) => (
-                <li key={c.slug}>
-                  <Link href={`/service-areas/${c.slug}`} className="hover:text-yellow-400">{c.name}, PA</Link>
-                </li>
+          <div className="md:col-span-5">
+            <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-ink-400">Service Area</h4>
+            <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm text-ink-200 sm:grid-cols-3">
+              {cities.map((c) => (
+                <li key={c.slug}>{c.name}, PA</li>
               ))}
             </ul>
-            <Link href="/service-areas" className="mt-4 inline-block text-sm font-semibold text-yellow-400 hover:text-yellow-300">
-              View all service areas →
-            </Link>
           </div>
         </div>
 

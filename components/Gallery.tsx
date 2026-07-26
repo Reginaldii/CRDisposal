@@ -1,17 +1,17 @@
 import PhotoPlaceholder from './PhotoPlaceholder';
 
 const items: { label: string; variant: 'dark' | 'yellow' | 'slate'; ratio: string }[] = [
-  { label: 'Hooklift Delivery — Driveway Placement', variant: 'dark', ratio: 'aspect-[4/3]' },
-  { label: 'Before / After — Full Property Cleanout', variant: 'yellow', ratio: 'aspect-square' },
-  { label: 'Roofing Tear-Off Job Site', variant: 'slate', ratio: 'aspect-[4/3]' },
-  { label: '30-Yard Fleet Lineup', variant: 'dark', ratio: 'aspect-square' },
-  { label: 'Kitchen Remodel Debris Loadout', variant: 'yellow', ratio: 'aspect-[4/3]' },
-  { label: 'New Construction Site Service', variant: 'slate', ratio: 'aspect-[4/3]' },
+  { label: 'Before / After — Garage Cleanout', variant: 'dark', ratio: 'aspect-[4/3]' },
+  { label: 'Before / After — Estate Cleanout', variant: 'yellow', ratio: 'aspect-square' },
+  { label: 'Furniture & Appliance Pickup', variant: 'slate', ratio: 'aspect-[4/3]' },
+  { label: 'F350 Dump Truck On-Site', variant: 'dark', ratio: 'aspect-square' },
+  { label: 'Before / After — Storage Unit Cleanout', variant: 'yellow', ratio: 'aspect-[4/3]' },
+  { label: 'Construction Debris Loadout', variant: 'slate', ratio: 'aspect-[4/3]' },
 ];
 
 export default function Gallery() {
   return (
-    <section className="section bg-ink-50 dark:bg-ink-800">
+    <section id="gallery" className="section bg-ink-50 dark:bg-ink-800 scroll-mt-16">
       <div className="container-x">
         <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
           <div className="max-w-xl">

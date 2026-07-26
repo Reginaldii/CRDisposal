@@ -1,18 +1,21 @@
 import type { Metadata } from 'next';
 import Hero from '@/components/Hero';
 import TrustBar from '@/components/TrustBar';
-import FeatureGrid from '@/components/FeatureGrid';
-import DumpsterSizeCalculator from '@/components/DumpsterSizeCalculator';
-import ContractorStrip from '@/components/ContractorStrip';
-import Gallery from '@/components/Gallery';
+import WhyChooseUs from '@/components/WhyChooseUs';
+import ServicesGrid from '@/components/ServicesGrid';
+import HowItWorks from '@/components/HowItWorks';
+import EstimateSection from '@/components/EstimateSection';
+import AboutSection from '@/components/AboutSection';
 import Testimonials from '@/components/Testimonials';
-import ServiceAreasStrip from '@/components/ServiceAreasStrip';
+import Gallery from '@/components/Gallery';
+import ServiceAreaSection from '@/components/ServiceAreaSection';
+import ContactSection from '@/components/ContactSection';
 import CTASection from '@/components/CTASection';
 
 export const metadata: Metadata = {
-  title: 'CR Disposal | Dumpster Rentals Done Right — Lehigh Valley, PA',
+  title: 'CR Disposal | Junk Gone Today — Lehigh Valley, PA',
   description:
-    'Same-day dumpster delivery, transparent flat-rate pricing, and hooklift service for contractors and homeowners across the Lehigh Valley, PA. Licensed & insured.',
+    'Fast, affordable, locally owned junk removal in the Lehigh Valley. Same-day service, upfront pricing, free estimates in under two minutes.',
   alternates: { canonical: '/' },
 };
 
@@ -21,13 +24,16 @@ export default function HomePage() {
     <>
       <Hero />
       <TrustBar />
-      <FeatureGrid />
-      <DumpsterSizeCalculator />
-      <ContractorStrip />
-      <Gallery />
+      <WhyChooseUs />
+      <ServicesGrid />
+      <HowItWorks />
+      <EstimateSection />
+      <AboutSection />
       <Testimonials />
-      <ServiceAreasStrip />
+      <Gallery />
+      <ServiceAreaSection />
       <CTASection />
+      <ContactSection />
     </>
   );
 }

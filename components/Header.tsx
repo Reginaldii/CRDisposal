@@ -1,17 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from './Logo';
 import { primaryNav, site } from '@/lib/site';
-import { MenuIcon, CloseIcon, PhoneIcon, ArrowRightIcon } from './icons';
+import { MenuIcon, CloseIcon, PhoneIcon, MessageIcon, StarIcon } from './icons';
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
+  const [active, setActive] = useState('#home');
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -21,8 +19,23 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+    const sections = primaryNav
+      .map((item) => document.querySelector(item.href))
+      .filter((el): el is Element => !!el);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting);
+        if (visible.length > 0) {
+          setActive(`#${visible[0].target.id}`);
+        }
+      },
+      { rootMargin: '-40% 0px -55% 0px' }
+    );
+
+    sections.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     document.documentElement.style.overflow = open ? 'hidden' : '';
@@ -39,32 +52,32 @@ export default function Header() {
       <div className="container-x flex h-16 md:h-20 items-center justify-between">
         <Logo />
 
-        <nav className="hidden xl:flex items-center gap-7">
+        <nav className="hidden xl:flex items-center gap-6">
           {primaryNav.map((item) => (
-            <Link
+            <a
               key={item.href}
               href={item.href}
               className={`text-[13.5px] font-medium tracking-tight transition-colors hover:text-yellow-600 dark:hover:text-yellow-400 ${
-                pathname === item.href ? 'text-yellow-600 dark:text-yellow-400' : 'text-ink-700 dark:text-ink-200'
+                active === item.href ? 'text-yellow-600 dark:text-yellow-400' : 'text-ink-700 dark:text-ink-200'
               }`}
             >
               {item.label}
-            </Link>
+            </a>
           ))}
         </nav>
 
-        <div className="hidden xl:flex items-center gap-3">
-          <a
-            href={site.phoneHref}
-            className="flex items-center gap-2 text-sm font-semibold text-ink-900 dark:text-white"
-          >
+        <div className="hidden xl:flex items-center gap-4">
+          <div className="flex items-center gap-1 text-sm font-semibold">
+            <StarIcon className="h-4 w-4 text-yellow-500" />
+            {site.rating} <span className="text-ink-400 font-normal">({site.reviewCount}+)</span>
+          </div>
+          <a href={site.phoneHref} className="flex items-center gap-2 text-sm font-semibold text-ink-900 dark:text-white">
             <PhoneIcon className="h-4 w-4 text-yellow-500" />
             {site.phone}
           </a>
-          <Link href="/quote" className="btn-primary">
-            Get a Quote
-            <ArrowRightIcon className="h-4 w-4" />
-          </Link>
+          <a href="#estimate" className="btn-primary">
+            Get Free Estimate
+          </a>
         </div>
 
         <button
@@ -87,23 +100,27 @@ export default function Header() {
           >
             <div className="container-x flex flex-col gap-1 py-5">
               {primaryNav.map((item) => (
-                <Link
+                <a
                   key={item.href}
                   href={item.href}
+                  onClick={() => setOpen(false)}
                   className="rounded-lg px-3 py-3 text-base font-medium text-ink-800 hover:bg-ink-50 dark:text-ink-100 dark:hover:bg-ink-800"
                 >
                   {item.label}
-                </Link>
+                </a>
               ))}
               <div className="mt-4 flex flex-col gap-3">
                 <a href={site.phoneHref} className="btn-dark w-full">
                   <PhoneIcon className="h-4 w-4" />
                   Call {site.phone}
                 </a>
-                <Link href="/quote" className="btn-primary w-full">
-                  Get a Quote
-                  <ArrowRightIcon className="h-4 w-4" />
-                </Link>
+                <a href={site.smsHref} className="btn-outline w-full">
+                  <MessageIcon className="h-4 w-4" />
+                  Text Photos
+                </a>
+                <a href="#estimate" onClick={() => setOpen(false)} className="btn-primary w-full">
+                  Get Free Estimate
+                </a>
               </div>
             </div>
           </motion.div>

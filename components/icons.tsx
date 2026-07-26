@@ -162,3 +162,145 @@ export function BuildingIcon(props: IconProps) {
     </svg>
   );
 }
+
+export function Building2Icon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="3" y="7" width="8" height="14" />
+      <rect x="13" y="3" width="8" height="18" />
+      <path d="M6 11h2M6 15h2M16 7h2M16 11h2M16 15h2" />
+    </svg>
+  );
+}
+
+export function SofaIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M4 13V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5" />
+      <path d="M3 13h18v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" />
+      <path d="M5 18v2M19 18v2" />
+    </svg>
+  );
+}
+
+export function ApplianceIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="5" y="2.5" width="14" height="19" rx="1.5" />
+      <path d="M5 10h14" />
+      <path d="M9 6h1M9 14h1" />
+    </svg>
+  );
+}
+
+export function GarageIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M3 10 12 4l9 6v10H3z" />
+      <path d="M6 20v-7h12v7" />
+      <path d="M6 15h12M6 17.5h12" />
+    </svg>
+  );
+}
+
+export function LeafIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M5 20C5 11 11 4 20 4c0 9-7 15-15 16z" />
+      <path d="M5 20c2-4 5-7 9-9" />
+    </svg>
+  );
+}
+
+export function HotTubIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="3" y="9" width="18" height="9" rx="2" />
+      <path d="M7 5.5c0 1-1 1-1 2s1 1 1 2M12 5.5c0 1-1 1-1 2s1 1 1 2M17 5.5c0 1-1 1-1 2s1 1 1 2" />
+      <path d="M3 13.5h18" />
+    </svg>
+  );
+}
+
+export function ShedIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M3 11 12 5l9 6" />
+      <path d="M4 11v9h16v-9" />
+      <path d="M12 5v6M9 20v-5h6v5" />
+    </svg>
+  );
+}
+
+export function BriefcaseIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="3" y="7.5" width="18" height="12" rx="1.5" />
+      <path d="M8 7.5V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1.5" />
+      <path d="M3 12.5h18" />
+    </svg>
+  );
+}
+
+export function BoxIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M3 8 12 4l9 4-9 4-9-4z" />
+      <path d="M3 8v9l9 4 9-4V8" />
+      <path d="M12 12v9" />
+    </svg>
+  );
+}
+
+export function KeyIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="8" cy="8" r="4" />
+      <path d="m11 11 9 9M16 16l2.5 2.5M19 13l2.5 2.5" />
+    </svg>
+  );
+}
+
+export function MuscleIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M5 20V10a4 4 0 0 1 4-4c1.5 0 2 1 3 1s1.5-1 3-1a4 4 0 0 1 4 4v2" />
+      <path d="M5 20h14M19 12c1.5 0 2 1.2 2 2.5S19.5 18 18 18h-1" />
+    </svg>
+  );
+}
+
+export function CameraIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" />
+      <circle cx="12" cy="13.5" r="3.5" />
+    </svg>
+  );
+}
+
+export function UploadIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 16V4M8 8l4-4 4 4" />
+      <path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" />
+    </svg>
+  );
+}
+
+export function MessageIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M4 5h16v11H9l-4 4V16H4z" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function CalendarIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="3.5" y="5" width="17" height="16" rx="2" />
+      <path d="M3.5 9.5h17M8 3v4M16 3v4" />
+    </svg>
+  );
+}
