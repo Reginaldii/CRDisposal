@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendNotificationEmail } from '@/lib/sendEmail';
+import { appendToSheet } from '@/lib/sendToSheet';
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,10 +13,19 @@ export async function POST(req: NextRequest) {
 
     const text = [`Name: ${name}`, `Email: ${email}`, `Phone: ${phone || '—'}`, '', message].join('\n');
 
-    const sent = await sendNotificationEmail({
-      subject: `New contact message from ${name}`,
-      text,
-    });
+    const [sent] = await Promise.all([
+      sendNotificationEmail({
+        subject: `New contact message from ${name}`,
+        text,
+      }),
+      appendToSheet({
+        type: 'Contact',
+        name,
+        email,
+        phone: phone || '',
+        message,
+      }),
+    ]);
 
     if (!sent) {
       console.log('New contact message (email not configured):', body);

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendNotificationEmail } from '@/lib/sendEmail';
+import { appendToSheet } from '@/lib/sendToSheet';
 
 type Photo = { dataUrl: string; name: string };
 
@@ -17,6 +18,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields.' }, { status: 400 });
     }
 
+    const preferredDate = dateOption === 'choose' ? chosenDate : dateOption || '';
+
     const lines = [
       `Name: ${name}`,
       `Phone: ${phone}`,
@@ -28,7 +31,7 @@ export async function POST(req: NextRequest) {
       otherDescription ? `Other item details: ${otherDescription}` : null,
       `Truck space: ${truckFill || '—'}`,
       `Special conditions: ${conditions.join(', ') || 'None'}`,
-      `Preferred date: ${dateOption === 'choose' ? chosenDate : dateOption || '—'}`,
+      `Preferred date: ${preferredDate || '—'}`,
       `Notes: ${notes || '—'}`,
       `Photos attached: ${photos.length}`,
       referralCode ? `Referral code: ${referralCode}` : null,
@@ -42,13 +45,33 @@ export async function POST(req: NextRequest) {
       encoding: 'base64' as const,
     }));
 
-    const sent = await sendNotificationEmail({
-      subject: `New estimate request from ${name}`,
-      text: lines,
-      attachments,
-    });
+    const [emailSent] = await Promise.all([
+      sendNotificationEmail({
+        subject: `New estimate request from ${name}`,
+        text: lines,
+        attachments,
+      }),
+      appendToSheet({
+        type: 'Estimate',
+        name,
+        phone,
+        email: email || '',
+        address,
+        city: city || '',
+        zip,
+        propertyType: propertyType || '',
+        items: items.join(', '),
+        otherDescription: otherDescription || '',
+        truckFill: truckFill || '',
+        conditions: conditions.join(', '),
+        preferredDate,
+        notes: notes || '',
+        photoCount: photos.length,
+        referralCode: referralCode || '',
+      }),
+    ]);
 
-    if (!sent) {
+    if (!emailSent) {
       // GMAIL_USER / GMAIL_APP_PASSWORD not configured for this environment.
       console.log('New estimate request (email not configured):', lines);
     }
