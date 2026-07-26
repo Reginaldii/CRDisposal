@@ -44,13 +44,22 @@ function doPost(e) {
       data.propertyType || '',
       data.items || '',
       data.otherDescription || '',
-      data.truckFill || '',
+      data.locations || '',
       data.conditions || '',
       data.preferredDate || '',
       data.notes || '',
       data.photoCount || '',
       data.referralCode || '',
       data.message || '',
+      data.truckFillLabel || '',
+      data.effectiveCuYd || '',
+      data.weightLbs || '',
+      data.laborHours || '',
+      data.disposalFee || '',
+      data.fuelFee || '',
+      data.priceLow || '',
+      data.priceHigh || '',
+      data.estimatedProfit || '',
     ]);
   }
 

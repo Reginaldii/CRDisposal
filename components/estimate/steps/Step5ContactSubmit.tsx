@@ -1,12 +1,8 @@
 import { EstimateFormData } from '../types';
-import { contactPreferences, itemCategories, truckFillLevels } from '@/lib/estimate';
+import { contactPreferences } from '@/lib/estimate';
+import { findItem } from '@/lib/items';
+import { estimateJob } from '@/lib/pricingEngine';
 import { CheckIcon } from '../../icons';
-
-const allItems = itemCategories.flatMap((c) => c.items);
-
-function labelFor(list: { id: string; label: string }[], id: string) {
-  return list.find((x) => x.id === id)?.label ?? id;
-}
 
 export default function Step5ContactSubmit({
   data,
@@ -15,9 +11,14 @@ export default function Step5ContactSubmit({
   data: EstimateFormData;
   update: (patch: Partial<EstimateFormData>) => void;
 }) {
-  const itemLabels = data.items
-    .map((id) => (id === 'other' && data.otherDescription ? data.otherDescription : labelFor(allItems, id)));
-  const truckLabel = labelFor(truckFillLevels, data.truckFill);
+  const itemLabels = Object.entries(data.itemQuantities)
+    .filter(([, qty]) => qty > 0)
+    .map(([id, qty]) => {
+      const label = id === 'other' && data.otherDescription ? data.otherDescription : findItem(id)?.label ?? id;
+      return qty > 1 ? `${label} x${qty}` : label;
+    });
+
+  const estimate = estimateJob({ itemQuantities: data.itemQuantities, accessConditions: data.conditions });
 
   return (
     <div className="space-y-6">
@@ -79,14 +80,28 @@ export default function Step5ContactSubmit({
         className="w-full rounded-xl border border-ink-900/10 bg-white px-4 py-3.5 text-base dark:border-white/10 dark:bg-ink-900"
       />
 
-      <div className="rounded-2xl border border-ink-900/10 bg-ink-50 p-4 text-sm dark:border-white/10 dark:bg-ink-900">
-        <p className="flex items-center gap-2 font-semibold">
-          <CheckIcon className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
-          {itemLabels.length ? itemLabels.join(', ') : 'No items selected'} · {truckLabel || 'Size TBD'}
+      <div className="rounded-2xl border border-ink-900/10 bg-ink-50 p-5 text-sm dark:border-white/10 dark:bg-ink-900">
+        <p className="flex items-start gap-2 font-semibold leading-relaxed">
+          <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-yellow-600 dark:text-yellow-400" />
+          {itemLabels.length ? itemLabels.join(', ') : 'No items selected'}
         </p>
-        <p className="mt-1 text-ink-500 dark:text-ink-300">
-          Free estimate — we&apos;ll follow up by your preferred contact method, usually within the hour.
-        </p>
+
+        <div className="mt-4 border-t border-ink-900/10 pt-4 dark:border-white/10">
+          <p className="text-xs font-semibold uppercase tracking-[0.1em] text-ink-400">
+            Estimated Price Range
+          </p>
+          <p className="mt-1 font-display text-3xl font-extrabold tracking-tight">
+            ${estimate.priceLow} – ${estimate.priceHigh}
+          </p>
+          <p className="mt-3 text-ink-500 dark:text-ink-300">
+            Based on the information provided, similar jobs typically fall within this price
+            range. This is not your final guaranteed quote — every estimate is personally
+            reviewed before pricing is finalized.
+          </p>
+          <p className="mt-3 font-semibold text-ink-700 dark:text-ink-200">
+            Expected response time: 15–30 minutes during business hours.
+          </p>
+        </div>
       </div>
     </div>
   );
