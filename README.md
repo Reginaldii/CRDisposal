@@ -118,9 +118,12 @@ blindly:
   month)`, done by hand and entered as one number — there's no live accounting integration. Revisit
   it whenever your loan/insurance costs change or your actual job volume becomes clearer than the
   assumption you started with. As of this review: ~$745/mo overhead ÷ ~16 jobs/mo ≈ $45/job.
-- **`minimumCharge`** ($175) is a hard floor for degenerate cases, not the price most jobs actually
-  land on — `coreCost` in `lib/pricingEngine.ts` (labor + disposal + fuel + overhead) usually exceeds
-  it on its own.
+- **`minimumCharge`** ($99) is a hard floor on `basePrice` for degenerate cases, not the price most
+  jobs actually land on — `coreCost` (labor + disposal + fuel + overhead) usually exceeds it on its
+  own. It intentionally does NOT also floor `priceLow` — an earlier version did, which silently
+  overrode the competitive low end back up to $175 for every small job no matter what
+  `rangeSpread.low` was set to. Keep it that way if you touch this again: `minimumCharge` should only
+  ever appear in the `basePrice` line in `lib/pricingEngine.ts`.
 
 ## Real fuel-cost calculation
 
