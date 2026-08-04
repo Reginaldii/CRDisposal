@@ -4,6 +4,7 @@ import { appendToSheet } from '@/lib/sendToSheet';
 import { findItem } from '@/lib/items';
 import { estimateJob } from '@/lib/pricingEngine';
 import { computeFuelCost } from '@/lib/routeDistance';
+import { getPublishedPrice } from '@/lib/publishedPricing';
 
 type Photo = { dataUrl: string; name: string };
 
@@ -44,6 +45,15 @@ export async function POST(req: NextRequest) {
       fuelCostOverride: routeFuel?.fuelCost,
     });
 
+    // What the customer actually saw (lib/publishedPricing.ts's flat item/
+    // volume-tier table), vs. estimate.basePrice (the real cost-model
+    // number, including access-condition surcharges). Flagged here so a
+    // published price that undershoots real cost for this specific job
+    // (e.g. a "Chair" quote that turned out to need stairs + a long carry)
+    // doesn't get missed.
+    const published = skipItemList ? null : getPublishedPrice(itemQuantities, estimate.truckFillFraction);
+    const marginRisk = published ? published.low < estimate.basePrice : false;
+
     if (process.env.NODE_ENV !== 'production') {
       // Development-only debug breakdown — never shown to the customer,
       // never included in the API response, and skipped entirely in
@@ -62,6 +72,8 @@ export async function POST(req: NextRequest) {
         basePrice: estimate.basePrice,
         priceLow: estimate.priceLow,
         priceHigh: estimate.priceHigh,
+        published,
+        marginRisk,
       });
     }
 
@@ -83,7 +95,13 @@ export async function POST(req: NextRequest) {
       `Photos attached: ${photos.length}`,
       referralCode ? `Referral code: ${referralCode}` : null,
       '',
-      '--- Internal estimate (not shown to customer) ---',
+      published
+        ? `Published price shown to customer: $${published.low} - $${published.high} (${published.source === 'item' ? 'item price' : published.label})`
+        : null,
+      marginRisk
+        ? `⚠ MARGIN RISK: published low end ($${published?.low}) is below this job's real cost-plus-margin price ($${estimate.basePrice}) — review before confirming.`
+        : null,
+      '--- Internal cost estimate (not shown to customer) ---',
       `Truck fill: ${estimate.truckFillLabel} (${estimate.effectiveCuYd} effective cu yd, ${estimate.weightLbs} lbs)`,
       `Estimated labor: ${estimate.laborHours} hrs ($${estimate.laborCost})`,
       `Estimated disposal fee: $${estimate.disposalFee}`,
@@ -94,7 +112,7 @@ export async function POST(req: NextRequest) {
         ? `Fuel: ${routeFuel.unloadedGallons} gal unloaded + ${routeFuel.loadedGallons} gal loaded = ${routeFuel.totalGallons} gal — $${estimate.fuelFee}`
         : `Estimated fuel fee: $${estimate.fuelFee} (flat rate — route distance unavailable for this request)`,
       `Overhead recovery: $${estimate.overheadFee}`,
-      `Suggested price range: $${estimate.priceLow} - $${estimate.priceHigh}${skipItemList ? ' (UNRELIABLE — customer skipped item list, price from photos instead)' : ''}`,
+      `Real cost-model price range: $${estimate.priceLow} - $${estimate.priceHigh}${skipItemList ? ' (UNRELIABLE — customer skipped item list, price from photos instead)' : ''}`,
       `Estimated profit at midpoint: $${estimate.estimatedProfit}`,
     ]
       .filter((line) => line !== null)
@@ -108,7 +126,7 @@ export async function POST(req: NextRequest) {
 
     const subjectEstimate = skipItemList
       ? 'photo review requested'
-      : `est. $${estimate.priceLow}-$${estimate.priceHigh}`;
+      : `est. $${published?.low}-$${published?.high}${marginRisk ? ' ⚠' : ''}`;
 
     const [emailSent] = await Promise.all([
       sendNotificationEmail({
@@ -149,6 +167,10 @@ export async function POST(req: NextRequest) {
         unloadedGallons: routeFuel?.unloadedGallons ?? '',
         loadedGallons: routeFuel?.loadedGallons ?? '',
         totalGallons: routeFuel?.totalGallons ?? '',
+        publishedLow: published?.low ?? '',
+        publishedHigh: published?.high ?? '',
+        pricingSource: published?.source ?? '',
+        marginRisk: marginRisk ? 'Yes' : 'No',
         priceLow: estimate.priceLow,
         priceHigh: estimate.priceHigh,
         estimatedProfit: estimate.estimatedProfit,

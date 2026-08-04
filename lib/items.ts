@@ -94,6 +94,7 @@ export const itemCategories: ItemCategory[] = [
       { id: 'tool-chest', label: 'Tool Chest', cuYd: 1, lbs: 100, heavy: true },
       { id: 'ladder', label: 'Ladder', cuYd: 0.5, lbs: 25 },
       { id: 'shelving', label: 'Shelving Unit', cuYd: 1, lbs: 50 },
+      { id: 'grill', label: 'Grill', cuYd: 1.5, lbs: 60 },
     ],
   },
   {

@@ -68,7 +68,8 @@ routes to two tabs in the same spreadsheet, based on submission type.
      Note, Locations, Conditions, Preferred Date, Notes, Photo Count, Referral Code, Message, Truck
      Fill, Effective Cu Yd, Weight Lbs, Labor Hours, Disposal Fee, Fuel Fee, Overhead Fee, Business
      To Customer Miles, Customer To Dump Miles, Dump To Business Miles, Total Route Miles, Unloaded
-     Gallons, Loaded Gallons, Total Gallons, Price Low, Price High, Estimated Profit`
+     Gallons, Loaded Gallons, Total Gallons, Published Low, Published High, Pricing Source, Margin
+     Risk, Price Low, Price High, Estimated Profit`
    - A tab named exactly **Partners** — row 1 headers: `Timestamp, Business Name, Contact Name,
      Phone, Email, Website, Business Type, Service Area, Referral Source, Notes`
 2. In that sheet, go to **Extensions → Apps Script**.
@@ -92,10 +93,49 @@ you'd have to update the Vercel environment variable again. Instead, in the Apps
 to **Deploy → Manage deployments**, click the pencil/edit icon on the existing deployment, set
 **Version: New version**, and click **Deploy** — same URL, updated code.
 
+## Published pricing (what the customer actually sees)
+
+`lib/publishedPricing.ts` is a simple, predictable price list — not the cost-model math. The
+customer only ever sees one of two things:
+
+- **A headline item price** — if they select exactly one unit of exactly one item from the
+  `headlineItems` list (Chair, Mattress, Couch/Loveseat, Recliner, Dresser, Washer/Dryer,
+  Refrigerator, Grill, Box Spring, Exercise Equipment), they get that item's flat published range.
+- **A volume-tier price** — anything else (multiple items, quantity > 1, or an item not on the
+  headline list) gets a price based on `volumeTiers`, how much of the truck the job fills (1/8
+  through Full Truck).
+
+The wizard shows this as "Starting At $X" with the fuller range just below it, plus "Final price
+depends on travel, stairs, and disposal" — deliberately simple, so access conditions and exact
+weight don't complicate the number the customer sees. That complexity still gets fully accounted
+for internally: `lib/pricingEngine.ts`'s real cost-model estimate runs on every submission
+regardless, and its full breakdown (labor, real disposal fee, fuel, overhead, profit) goes out in
+the internal notification email/sheet exactly as before — the published price and the real cost
+estimate are computed independently and both land in your inbox, so you always know if a job's
+real cost is running ahead of what was quoted.
+
+**Three items (Chair, Box Spring, Grill) are priced below their real standalone cost on purpose** —
+see the comment at the top of `lib/publishedPricing.ts`. The assumption is that these are almost
+always an add-on to a bigger job, not a solo trip. If you start getting a lot of true one-off calls
+for just one of these three, that assumption is wrong for that item and it should come up to match
+the other seven (real cost + margin, the same way they're already priced).
+
+**Margin risk flag:** every submission compares the published low end against
+`estimate.basePrice` (the real cost-model price, including access-condition surcharges like
+stairs). If the published price undershoots real cost for that specific job, the internal email
+gets a `⚠ MARGIN RISK` line and the subject line gets a `⚠` — e.g. someone requests a "Chair" but
+it turns out to need stairs and a long carry, pushing real cost above the flat chair price. Review
+those before confirming a final price with the customer.
+
+To adjust a published price, edit the number directly in `lib/publishedPricing.ts` — no need to
+touch the cost model. The cost model is what tells you whether a published number is still safe;
+see the next section for how it's built.
+
 ## Pricing & overhead
 
 `lib/pricingConfig.ts` is the single file to edit whenever real-world costs change — labor rate,
-Berky's fees, overhead, everything. A few numbers there are worth understanding, not just tuning
+Berky's fees, overhead, everything. This is the *internal* cost model — see the section above for
+what the customer actually sees. A few numbers here are worth understanding, not just tuning
 blindly:
 
 - **Disposal fee is billed by real weight, not load size.** Berky's charges a flat
