@@ -20,8 +20,14 @@ export const pricingConfig = {
   minimumCharge: 175,
 
   // The displayed range is the calculated price times these two
-  // multipliers (e.g. a $300 calculated price shows as "$270 - $345").
-  rangeSpread: { low: 0.9, high: 1.15 },
+  // multipliers (e.g. a $300 calculated price shows as "$240 - $345").
+  // low is intentionally more aggressive than high — the low end is what
+  // customers compare against competitors' advertised "starting at"
+  // prices, while the high end still needs to cover a harder version of
+  // the same job (stairs, a heavier item, etc.). The final number is
+  // always personally reviewed before it's real, so this is a marketing
+  // lever, not a promise to actually do every job at the bottom of it.
+  rangeSpread: { low: 0.8, high: 1.15 },
 
   // Our dump truck's approximate usable volume and safe payload weight.
   // Used only to compute the internal "how full is the truck" label for
@@ -34,11 +40,15 @@ export const pricingConfig = {
   // only — see disposal fee below for the actual dump-fee weight math).
   weightDensityLbsPerCuYd: 400,
 
-  // Labor. baseLaborHours covers loading time AND the realistic minimum
-  // total time any job takes once you include the actual drive to Berky's,
-  // waiting in line, and driving back — not just on-site loading.
-  laborRatePerHour: 60,
-  baseLaborHours: 1,
+  // Labor. Split into two pieces so the dump-run time can be shared across
+  // bundled small jobs the same way the disposal fee is (see
+  // smallLoadDisposalDivisor) — otherwise a small job would get its
+  // dump-fee discounted but still get charged a full solo dump run's
+  // worth of drive/wait time, which doesn't match reality if it's
+  // actually riding along with other pickups.
+  laborRatePerHour: 60, // in line with $50-90/hr researched for solo independent haulers in this market
+  loadTimeHours: 0.5, // on-site loading + drive to/from the customer — always charged in full
+  dumpRunHours: 0.5, // round-trip to Berky's + wait in line — shared per smallLoadDisposalDivisor below the disposal-fee-minimum weight line, charged in full above it (0.5 + 0.5 = 1 full hour matches the pre-split baseline for a standalone job — keep these two numbers summing to that if you adjust either one)
   laborHoursPerEffectiveCubicYard: 0.15,
 
   // Disposal fee — billed by REAL WEIGHT, matching Berky's actual fee

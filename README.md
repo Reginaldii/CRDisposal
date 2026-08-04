@@ -103,13 +103,15 @@ blindly:
   `disposalFeePerAdditionalTon` ($108) per full or partial `disposalFeeTonLbs` (2,000 lbs) beyond
   that — update these four numbers if Berky's fee schedule changes, not the formula itself (that
   lives in `lib/pricingEngine.ts`).
-- **Small jobs assume you'll bundle them.** Rather than charging every job under the 1,000 lb line
-  the full $108 dump minimum standalone, it's divided by `smallLoadDisposalDivisor` (2.5 — "roughly
-  2-3 small jobs share one dump run"), so a single-item pickup isn't priced as if it always requires
-  its own trip to Berky's. This only saves money if you actually combine small pickups before
-  dumping — raise the divisor if you're consistently bundling more than that, lower it toward 1 if a
-  small job often ends up going alone. Anything over 1,000 lbs pays the real per-ton cost in full, no
-  discount — those loads are less likely to leave truck room for another stop.
+- **Small jobs assume you'll bundle them — for both disposal fee AND labor time.** Rather than
+  charging every job under the 1,000 lb line a full standalone $108 dump run, the disposal fee AND
+  the `dumpRunHours` portion of labor (the drive to Berky's + wait in line + drive back — as opposed
+  to `loadTimeHours`, the actual on-site loading time, which is always charged in full) are both
+  divided by `smallLoadDisposalDivisor` (2.5 — "roughly 2-3 small jobs share one dump run"). This
+  only saves money if you actually combine small pickups before dumping — raise the divisor if
+  you're consistently bundling more than that, lower it toward 1 if a small job often ends up going
+  alone. Anything over 1,000 lbs pays both in full, no discount — those loads are less likely to
+  leave truck room for another stop.
 - **`overheadPerJob`** recovers fixed monthly costs (truck loan, vehicle insurance, business
   liability insurance, a maintenance reserve, etc.) as a flat add-on to every job's cost, instead of
   those costs just eating into profit invisibly. It's `(total monthly overhead) ÷ (expected jobs per
