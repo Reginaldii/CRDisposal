@@ -102,13 +102,13 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative hidden shrink-0 items-center justify-center xl:flex"
           >
-            <div className="absolute h-[440px] w-[440px] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.14),transparent_65%)] blur-2xl" />
+            <div className="absolute h-[560px] w-[560px] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.14),transparent_65%)] blur-2xl 2xl:h-[680px] 2xl:w-[680px]" />
             <Image
               src="/images/logo.png"
               alt="CR Disposal"
               width={1024}
               height={1024}
-              className="relative h-auto w-[320px] object-contain"
+              className="relative h-auto w-[440px] object-contain 2xl:w-[540px]"
               style={{
                 filter:
                   'drop-shadow(0 0 3px rgba(255,255,255,0.85)) drop-shadow(0 0 14px rgba(255,255,255,0.45)) drop-shadow(0 0 36px rgba(245,180,0,0.35))',
