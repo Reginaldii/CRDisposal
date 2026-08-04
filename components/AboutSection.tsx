@@ -2,7 +2,7 @@ import PhotoPlaceholder from './PhotoPlaceholder';
 import { ShieldIcon, ClockIcon, HomeIcon } from './icons';
 
 const values = [
-  { icon: ShieldIcon, title: 'Licensed & insured', desc: 'Every job, every time — no exceptions.' },
+  { icon: ShieldIcon, title: 'Upfront, honest pricing', desc: 'No hidden fees, no surprises at pickup.' },
   { icon: ClockIcon, title: 'Show up on time', desc: 'If we say a window, we hit it.' },
   { icon: HomeIcon, title: 'Stay local', desc: 'Based in the Lehigh Valley, not a call center.' },
 ];

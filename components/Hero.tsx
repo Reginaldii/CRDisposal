@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { site } from '@/lib/site';
-import { PhoneIcon, MessageIcon, CalendarIcon, StarIcon, MapPinIcon } from './icons';
+import { PhoneIcon, MessageIcon, CalendarIcon, MapPinIcon } from './icons';
 
 export default function Hero() {
   return (
@@ -28,10 +28,6 @@ export default function Hero() {
           className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-ink-200"
         >
           <span className="flex items-center gap-1.5 font-semibold text-white">
-            <StarIcon className="h-4 w-4 text-yellow-500" />
-            {site.rating} <span className="font-normal text-ink-300">({site.reviewCount}+ Google Reviews)</span>
-          </span>
-          <span className="flex items-center gap-1.5">
             <MapPinIcon className="h-4 w-4 text-yellow-500" />
             Serving the Lehigh Valley, PA
           </span>

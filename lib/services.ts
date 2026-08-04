@@ -24,7 +24,7 @@ export const whyChooseUs = [
   { label: 'Upfront Pricing', icon: 'tag' },
   { label: 'We Do All The Heavy Lifting', icon: 'muscle' },
   { label: 'Eco Friendly Disposal', icon: 'leaf' },
-  { label: 'Licensed & Insured', icon: 'shield' },
+  { label: 'Careful With Your Home', icon: 'shield' },
   { label: 'Locally Owned', icon: 'home' },
 ];
 

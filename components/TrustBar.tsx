@@ -1,8 +1,8 @@
 const stats = [
-  { value: '4.9★', label: '200+ Google Reviews' },
   { value: '<2 min', label: 'To Book an Estimate' },
   { value: '12+', label: 'Cities Served' },
-  { value: '100%', label: 'Licensed & Insured' },
+  { value: '100%', label: 'Upfront Pricing' },
+  { value: 'Same Day', label: 'Service Available' },
 ];
 
 export default function TrustBar() {

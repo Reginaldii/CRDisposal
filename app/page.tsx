@@ -7,7 +7,6 @@ import ServicesGrid from '@/components/ServicesGrid';
 import HowItWorks from '@/components/HowItWorks';
 import RestrictedItemsSection from '@/components/RestrictedItemsSection';
 import AboutSection from '@/components/AboutSection';
-import Testimonials from '@/components/Testimonials';
 import Gallery from '@/components/Gallery';
 import ServiceAreaSection from '@/components/ServiceAreaSection';
 import PartnerTeaser from '@/components/PartnerTeaser';
@@ -31,7 +30,6 @@ export default function HomePage() {
       <HowItWorks />
       <RestrictedItemsSection />
       <AboutSection />
-      <Testimonials />
       <Gallery />
       <ServiceAreaSection />
       <PartnerTeaser />
