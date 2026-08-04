@@ -3,6 +3,7 @@ import { sendNotificationEmail } from '@/lib/sendEmail';
 import { appendToSheet } from '@/lib/sendToSheet';
 import { findItem } from '@/lib/items';
 import { estimateJob } from '@/lib/pricingEngine';
+import { computeFuelCost } from '@/lib/routeDistance';
 
 type Photo = { dataUrl: string; name: string };
 
@@ -30,7 +31,38 @@ export async function POST(req: NextRequest) {
       })
       .join(', ');
 
-    const estimate = estimateJob({ itemQuantities, accessConditions: conditions });
+    // Real three-leg mileage (business -> customer -> Berky's -> business)
+    // and the fuel cost it implies, using the F-450's actual loaded/unloaded
+    // MPG. Never throws/blocks — returns null if the route API isn't
+    // configured or the address can't be resolved, in which case estimateJob
+    // falls back to the flat fuelFlatFee exactly as before this feature.
+    const routeFuel = await computeFuelCost(address, city, zip);
+
+    const estimate = estimateJob({
+      itemQuantities,
+      accessConditions: conditions,
+      fuelCostOverride: routeFuel?.fuelCost,
+    });
+
+    if (process.env.NODE_ENV !== 'production') {
+      // Development-only debug breakdown — never shown to the customer,
+      // never included in the API response, and skipped entirely in
+      // production (the business owner still gets the real numbers via the
+      // internal email section below, in every environment).
+      console.log('[route-fuel debug]', {
+        businessToCustomerMiles: routeFuel?.businessToCustomerMiles ?? null,
+        customerToDumpMiles: routeFuel?.customerToDumpMiles ?? null,
+        dumpToBusinessMiles: routeFuel?.dumpToBusinessMiles ?? null,
+        totalRouteMiles: routeFuel?.totalRouteMiles ?? null,
+        unloadedGallons: routeFuel?.unloadedGallons ?? null,
+        loadedGallons: routeFuel?.loadedGallons ?? null,
+        totalGallons: routeFuel?.totalGallons ?? null,
+        fuelCost: routeFuel?.fuelCost ?? null,
+        basePrice: estimate.basePrice,
+        priceLow: estimate.priceLow,
+        priceHigh: estimate.priceHigh,
+      });
+    }
 
     const lines = [
       `Name: ${name}`,
@@ -54,7 +86,12 @@ export async function POST(req: NextRequest) {
       `Truck fill: ${estimate.truckFillLabel} (${estimate.effectiveCuYd} effective cu yd, ${estimate.weightLbs} lbs)`,
       `Estimated labor: ${estimate.laborHours} hrs ($${estimate.laborCost})`,
       `Estimated disposal fee: $${estimate.disposalFee}`,
-      `Estimated fuel fee: $${estimate.fuelFee}`,
+      routeFuel
+        ? `Route: ${routeFuel.businessToCustomerMiles}mi to customer, ${routeFuel.customerToDumpMiles}mi to Berky's (loaded), ${routeFuel.dumpToBusinessMiles}mi back — ${routeFuel.totalRouteMiles}mi total`
+        : null,
+      routeFuel
+        ? `Fuel: ${routeFuel.unloadedGallons} gal unloaded + ${routeFuel.loadedGallons} gal loaded = ${routeFuel.totalGallons} gal — $${estimate.fuelFee}`
+        : `Estimated fuel fee: $${estimate.fuelFee} (flat rate — route distance unavailable for this request)`,
       `Suggested price range: $${estimate.priceLow} - $${estimate.priceHigh}${skipItemList ? ' (UNRELIABLE — customer skipped item list, price from photos instead)' : ''}`,
       `Estimated profit at midpoint: $${estimate.estimatedProfit}`,
     ]
@@ -102,6 +139,13 @@ export async function POST(req: NextRequest) {
         laborHours: estimate.laborHours,
         disposalFee: estimate.disposalFee,
         fuelFee: estimate.fuelFee,
+        businessToCustomerMiles: routeFuel?.businessToCustomerMiles ?? '',
+        customerToDumpMiles: routeFuel?.customerToDumpMiles ?? '',
+        dumpToBusinessMiles: routeFuel?.dumpToBusinessMiles ?? '',
+        totalRouteMiles: routeFuel?.totalRouteMiles ?? '',
+        unloadedGallons: routeFuel?.unloadedGallons ?? '',
+        loadedGallons: routeFuel?.loadedGallons ?? '',
+        totalGallons: routeFuel?.totalGallons ?? '',
         priceLow: estimate.priceLow,
         priceHigh: estimate.priceHigh,
         estimatedProfit: estimate.estimatedProfit,

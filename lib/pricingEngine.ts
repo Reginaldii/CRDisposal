@@ -4,6 +4,11 @@ import { pricingConfig } from './pricingConfig';
 export type EstimateInput = {
   itemQuantities: Record<string, number>;
   accessConditions: string[];
+  // Real-mileage fuel cost from lib/routeDistance.ts (server-only — see
+  // that file). Omitted on the client-side live preview and whenever the
+  // route lookup isn't configured or fails, in which case this falls back
+  // to the flat pricingConfig.fuelFlatFee exactly as before.
+  fuelCostOverride?: number;
 };
 
 export type EstimateResult = {
@@ -48,7 +53,11 @@ function labelForFill(fraction: number): string {
   return 'More Than One Truckload';
 }
 
-export function estimateJob({ itemQuantities, accessConditions }: EstimateInput): EstimateResult {
+export function estimateJob({
+  itemQuantities,
+  accessConditions,
+  fuelCostOverride,
+}: EstimateInput): EstimateResult {
   let volumeCuYd = 0;
   let weightLbs = 0;
   let hasHeavyItems = false;
@@ -73,7 +82,7 @@ export function estimateJob({ itemQuantities, accessConditions }: EstimateInput)
   const laborCost = laborHours * pricingConfig.laborRatePerHour;
 
   const disposalFee = effectiveCuYd * pricingConfig.disposalFeePerEffectiveCubicYard;
-  const fuelFee = pricingConfig.fuelFlatFee;
+  const fuelFee = fuelCostOverride ?? pricingConfig.fuelFlatFee;
 
   let conditionMultiplier = 0;
   let conditionFlatAdd = 0;
