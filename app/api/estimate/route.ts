@@ -58,6 +58,7 @@ export async function POST(req: NextRequest) {
         loadedGallons: routeFuel?.loadedGallons ?? null,
         totalGallons: routeFuel?.totalGallons ?? null,
         fuelCost: routeFuel?.fuelCost ?? null,
+        overheadFee: estimate.overheadFee,
         basePrice: estimate.basePrice,
         priceLow: estimate.priceLow,
         priceHigh: estimate.priceHigh,
@@ -92,6 +93,7 @@ export async function POST(req: NextRequest) {
       routeFuel
         ? `Fuel: ${routeFuel.unloadedGallons} gal unloaded + ${routeFuel.loadedGallons} gal loaded = ${routeFuel.totalGallons} gal — $${estimate.fuelFee}`
         : `Estimated fuel fee: $${estimate.fuelFee} (flat rate — route distance unavailable for this request)`,
+      `Overhead recovery: $${estimate.overheadFee}`,
       `Suggested price range: $${estimate.priceLow} - $${estimate.priceHigh}${skipItemList ? ' (UNRELIABLE — customer skipped item list, price from photos instead)' : ''}`,
       `Estimated profit at midpoint: $${estimate.estimatedProfit}`,
     ]
@@ -139,6 +141,7 @@ export async function POST(req: NextRequest) {
         laborHours: estimate.laborHours,
         disposalFee: estimate.disposalFee,
         fuelFee: estimate.fuelFee,
+        overheadFee: estimate.overheadFee,
         businessToCustomerMiles: routeFuel?.businessToCustomerMiles ?? '',
         customerToDumpMiles: routeFuel?.customerToDumpMiles ?? '',
         dumpToBusinessMiles: routeFuel?.dumpToBusinessMiles ?? '',
