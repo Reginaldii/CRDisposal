@@ -78,22 +78,28 @@ export function estimateJob({
   const truckFillFraction = effectiveCuYd / pricingConfig.truckCapacityCubicYards;
   const truckFillLabel = labelForFill(truckFillFraction);
 
+  // Jobs under the 1,000 lb line are assumed to get combined with other
+  // small jobs before a dump run — both the disposal fee AND the dump-run
+  // portion of labor time are shared across smallLoadDisposalDivisor jobs
+  // instead of charged in full to each one. Anything heavier pays both in
+  // full, since a load that size is less likely to leave room (or need)
+  // to combine with another stop.
+  const extraLbs = Math.max(0, weightLbs - pricingConfig.disposalFeeMinimumLbs);
+  const extraTons = Math.ceil(extraLbs / pricingConfig.disposalFeeTonLbs);
+  const isBundleable = extraTons === 0;
+
+  const dumpRunHours = isBundleable
+    ? pricingConfig.dumpRunHours / pricingConfig.smallLoadDisposalDivisor
+    : pricingConfig.dumpRunHours;
   const laborHours =
-    pricingConfig.baseLaborHours + effectiveCuYd * pricingConfig.laborHoursPerEffectiveCubicYard;
+    pricingConfig.loadTimeHours + dumpRunHours + effectiveCuYd * pricingConfig.laborHoursPerEffectiveCubicYard;
   const laborCost = laborHours * pricingConfig.laborRatePerHour;
 
   // Billed by real weight, matching Berky's actual step-function fee
-  // schedule — NOT a smooth per-cubic-yard rate. Jobs under the 1,000 lb
-  // line are assumed to get combined with other small jobs before a dump
-  // run, so they only pay a share of the $108 minimum (see
-  // smallLoadDisposalDivisor); anything heavier pays the real per-ton
-  // cost in full.
-  const extraLbs = Math.max(0, weightLbs - pricingConfig.disposalFeeMinimumLbs);
-  const extraTons = Math.ceil(extraLbs / pricingConfig.disposalFeeTonLbs);
-  const disposalFee =
-    extraTons > 0
-      ? pricingConfig.disposalFeeMinimum + extraTons * pricingConfig.disposalFeePerAdditionalTon
-      : pricingConfig.disposalFeeMinimum / pricingConfig.smallLoadDisposalDivisor;
+  // schedule — NOT a smooth per-cubic-yard rate.
+  const disposalFee = isBundleable
+    ? pricingConfig.disposalFeeMinimum / pricingConfig.smallLoadDisposalDivisor
+    : pricingConfig.disposalFeeMinimum + extraTons * pricingConfig.disposalFeePerAdditionalTon;
 
   const fuelFee = fuelCostOverride ?? pricingConfig.fuelFlatFee;
   const overheadFee = pricingConfig.overheadPerJob;
