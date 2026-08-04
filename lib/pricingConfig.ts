@@ -9,18 +9,15 @@
 //
 // Numbers below reflect Berky's Transfer's actual fee schedule and this
 // business's real monthly overhead (loan + insurance), reviewed 2026-08.
-// "Price safe" philosophy: every job is priced to be profitable even in
-// the worst case — a single standalone dump run — since a new operation
-// doesn't have route density yet to reliably batch multiple pickups per
-// dump run. If/when batching small jobs together becomes routine, treat
-// the disposal-cost savings as bonus margin rather than lowering these
-// numbers, unless you're confident that'll hold up on a slow day too.
+// Small/single-item jobs assume you'll bundle them with other pickups
+// before a dump run (see smallLoadDisposalDivisor below) rather than
+// pricing every job for a worst-case standalone dump — an explicit choice
+// to stay competitive for a new business building its customer base, at
+// the cost of thinner margin on a small job that doesn't end up bundled.
 export const pricingConfig = {
-  // Minimum charge for any job, regardless of how small. Deliberately set
-  // below the typical real-world minimum job cost (~$250, see below) — it
-  // mostly exists as a floor for degenerate cases, since coreCost normally
-  // exceeds it on its own.
-  minimumCharge: 225,
+  // Minimum charge for any job, regardless of how small. Mostly a floor
+  // for degenerate cases — coreCost normally exceeds it on its own.
+  minimumCharge: 175,
 
   // The displayed range is the calculated price times these two
   // multipliers (e.g. a $300 calculated price shows as "$270 - $345").
@@ -54,6 +51,18 @@ export const pricingConfig = {
   disposalFeeMinimumLbs: 1000,
   disposalFeePerAdditionalTon: 108,
   disposalFeeTonLbs: 2000,
+
+  // How many small jobs (ones that stay under disposalFeeMinimumLbs and
+  // never trigger an extra-ton charge) you realistically expect to combine
+  // into one dump run. The $108 minimum gets divided by this instead of
+  // charged in full to each one — e.g. 2.5 means "roughly 2-3 small jobs
+  // share one Berky's minimum." Only applies below the 1,000 lb line;
+  // anything heavier pays the real per-ton cost in full, since a load
+  // that size is less likely to leave room to combine with another stop.
+  // Raise this if you're consistently bundling more jobs per run than
+  // this assumes, lower it (toward 1) if a small job often ends up going
+  // to the dump alone.
+  smallLoadDisposalDivisor: 2.5,
 
   // Flat placeholder fuel fee — only used as a fallback when the real
   // distance-based calculation (lib/routeDistance.ts) isn't configured or

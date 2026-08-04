@@ -101,25 +101,24 @@ blindly:
 - **Disposal fee is billed by real weight, not load size.** Berky's charges a flat
   `disposalFeeMinimum` ($108) for anything up to `disposalFeeMinimumLbs` (1,000 lbs), then
   `disposalFeePerAdditionalTon` ($108) per full or partial `disposalFeeTonLbs` (2,000 lbs) beyond
-  that. A single light item costs the same $108 minimum at the dump as anything else under 1,000
-  lbs — update these four numbers if Berky's fee schedule changes, not the formula itself (that
+  that — update these four numbers if Berky's fee schedule changes, not the formula itself (that
   lives in `lib/pricingEngine.ts`).
+- **Small jobs assume you'll bundle them.** Rather than charging every job under the 1,000 lb line
+  the full $108 dump minimum standalone, it's divided by `smallLoadDisposalDivisor` (2.5 — "roughly
+  2-3 small jobs share one dump run"), so a single-item pickup isn't priced as if it always requires
+  its own trip to Berky's. This only saves money if you actually combine small pickups before
+  dumping — raise the divisor if you're consistently bundling more than that, lower it toward 1 if a
+  small job often ends up going alone. Anything over 1,000 lbs pays the real per-ton cost in full, no
+  discount — those loads are less likely to leave truck room for another stop.
 - **`overheadPerJob`** recovers fixed monthly costs (truck loan, vehicle insurance, business
   liability insurance, a maintenance reserve, etc.) as a flat add-on to every job's cost, instead of
   those costs just eating into profit invisibly. It's `(total monthly overhead) ÷ (expected jobs per
   month)`, done by hand and entered as one number — there's no live accounting integration. Revisit
   it whenever your loan/insurance costs change or your actual job volume becomes clearer than the
   assumption you started with. As of this review: ~$745/mo overhead ÷ ~16 jobs/mo ≈ $45/job.
-- **`minimumCharge`** ($225) is intentionally set *below* the typical real minimum job cost — a
-  standalone single-item pickup normally costs more than this once labor + the $108 dump minimum +
-  fuel + overhead are added up (`coreCost` in `lib/pricingEngine.ts` almost always exceeds it on its
-  own). It mainly exists as a hard floor for edge cases, not as the price most small jobs actually
-  land on.
-- **"Price safe" assumption:** every job is priced assuming a worst-case standalone dump run, since
-  a new operation doesn't have route density yet to reliably batch multiple small pickups into one
-  Berky's trip. If batching becomes routine, that's bonus margin on top of these numbers rather than
-  a reason to lower them — only revisit `minimumCharge`/`overheadPerJob` downward once you're
-  confident batching will hold up on a slow day too, not just a good one.
+- **`minimumCharge`** ($175) is a hard floor for degenerate cases, not the price most jobs actually
+  land on — `coreCost` in `lib/pricingEngine.ts` (labor + disposal + fuel + overhead) usually exceeds
+  it on its own.
 
 ## Real fuel-cost calculation
 
