@@ -66,9 +66,9 @@ routes to two tabs in the same spreadsheet, based on submission type.
    - A tab named exactly **Submissions** — row 1 headers: `Timestamp, Type, Name, Phone, Email,
      Address, City, ZIP, Property Type, Items, Other Description, Skipped Item List, Unknown Items
      Note, Locations, Conditions, Preferred Date, Notes, Photo Count, Referral Code, Message, Truck
-     Fill, Effective Cu Yd, Weight Lbs, Labor Hours, Disposal Fee, Fuel Fee, Business To Customer
-     Miles, Customer To Dump Miles, Dump To Business Miles, Total Route Miles, Unloaded Gallons,
-     Loaded Gallons, Total Gallons, Price Low, Price High, Estimated Profit`
+     Fill, Effective Cu Yd, Weight Lbs, Labor Hours, Disposal Fee, Fuel Fee, Overhead Fee, Business
+     To Customer Miles, Customer To Dump Miles, Dump To Business Miles, Total Route Miles, Unloaded
+     Gallons, Loaded Gallons, Total Gallons, Price Low, Price High, Estimated Profit`
    - A tab named exactly **Partners** — row 1 headers: `Timestamp, Business Name, Contact Name,
      Phone, Email, Website, Business Type, Service Area, Referral Source, Notes`
 2. In that sheet, go to **Extensions → Apps Script**.
@@ -91,6 +91,35 @@ tabs existed): don't create another "New deployment," since that generates a dif
 you'd have to update the Vercel environment variable again. Instead, in the Apps Script editor go
 to **Deploy → Manage deployments**, click the pencil/edit icon on the existing deployment, set
 **Version: New version**, and click **Deploy** — same URL, updated code.
+
+## Pricing & overhead
+
+`lib/pricingConfig.ts` is the single file to edit whenever real-world costs change — labor rate,
+Berky's fees, overhead, everything. A few numbers there are worth understanding, not just tuning
+blindly:
+
+- **Disposal fee is billed by real weight, not load size.** Berky's charges a flat
+  `disposalFeeMinimum` ($108) for anything up to `disposalFeeMinimumLbs` (1,000 lbs), then
+  `disposalFeePerAdditionalTon` ($108) per full or partial `disposalFeeTonLbs` (2,000 lbs) beyond
+  that. A single light item costs the same $108 minimum at the dump as anything else under 1,000
+  lbs — update these four numbers if Berky's fee schedule changes, not the formula itself (that
+  lives in `lib/pricingEngine.ts`).
+- **`overheadPerJob`** recovers fixed monthly costs (truck loan, vehicle insurance, business
+  liability insurance, a maintenance reserve, etc.) as a flat add-on to every job's cost, instead of
+  those costs just eating into profit invisibly. It's `(total monthly overhead) ÷ (expected jobs per
+  month)`, done by hand and entered as one number — there's no live accounting integration. Revisit
+  it whenever your loan/insurance costs change or your actual job volume becomes clearer than the
+  assumption you started with. As of this review: ~$745/mo overhead ÷ ~16 jobs/mo ≈ $45/job.
+- **`minimumCharge`** ($225) is intentionally set *below* the typical real minimum job cost — a
+  standalone single-item pickup normally costs more than this once labor + the $108 dump minimum +
+  fuel + overhead are added up (`coreCost` in `lib/pricingEngine.ts` almost always exceeds it on its
+  own). It mainly exists as a hard floor for edge cases, not as the price most small jobs actually
+  land on.
+- **"Price safe" assumption:** every job is priced assuming a worst-case standalone dump run, since
+  a new operation doesn't have route density yet to reliably batch multiple small pickups into one
+  Berky's trip. If batching becomes routine, that's bonus margin on top of these numbers rather than
+  a reason to lower them — only revisit `minimumCharge`/`overheadPerJob` downward once you're
+  confident batching will hold up on a slow day too, not just a good one.
 
 ## Real fuel-cost calculation
 

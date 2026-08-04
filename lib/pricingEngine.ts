@@ -24,6 +24,7 @@ export type EstimateResult = {
   laborCost: number;
   disposalFee: number;
   fuelFee: number;
+  overheadFee: number;
   conditionMultiplier: number;
   conditionFlatAdd: number;
   basePrice: number;
@@ -81,8 +82,15 @@ export function estimateJob({
     pricingConfig.baseLaborHours + effectiveCuYd * pricingConfig.laborHoursPerEffectiveCubicYard;
   const laborCost = laborHours * pricingConfig.laborRatePerHour;
 
-  const disposalFee = effectiveCuYd * pricingConfig.disposalFeePerEffectiveCubicYard;
+  // Billed by real weight, matching Berky's actual step-function fee
+  // schedule — NOT a smooth per-cubic-yard rate. A single light item
+  // costs the same minimum as anything else under disposalFeeMinimumLbs.
+  const extraLbs = Math.max(0, weightLbs - pricingConfig.disposalFeeMinimumLbs);
+  const extraTons = Math.ceil(extraLbs / pricingConfig.disposalFeeTonLbs);
+  const disposalFee = pricingConfig.disposalFeeMinimum + extraTons * pricingConfig.disposalFeePerAdditionalTon;
+
   const fuelFee = fuelCostOverride ?? pricingConfig.fuelFlatFee;
+  const overheadFee = pricingConfig.overheadPerJob;
 
   let conditionMultiplier = 0;
   let conditionFlatAdd = 0;
@@ -103,7 +111,7 @@ export function estimateJob({
     conditionMultiplier += adjustments.heavyItems ?? 0;
   }
 
-  const coreCost = laborCost + disposalFee + fuelFee;
+  const coreCost = laborCost + disposalFee + fuelFee + overheadFee;
   const basePrice = Math.max(pricingConfig.minimumCharge, coreCost) * (1 + conditionMultiplier) + conditionFlatAdd;
 
   const priceLow = Math.max(pricingConfig.minimumCharge, round10(basePrice * pricingConfig.rangeSpread.low));
@@ -123,6 +131,7 @@ export function estimateJob({
     laborCost: Math.round(laborCost),
     disposalFee: Math.round(disposalFee),
     fuelFee: Math.round(fuelFee),
+    overheadFee: Math.round(overheadFee),
     conditionMultiplier: round2(conditionMultiplier),
     conditionFlatAdd,
     basePrice: Math.round(basePrice),
