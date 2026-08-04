@@ -43,8 +43,8 @@ export const metadata: Metadata = {
     images: [`${site.url}/images/logo.png`],
   },
   icons: {
-    icon: `${site.url}/images/logo.png`,
-    apple: `${site.url}/images/logo.png`,
+    icon: `${site.url}/images/favicon.png`,
+    apple: `${site.url}/images/favicon.png`,
   },
   robots: { index: true, follow: true },
 };
