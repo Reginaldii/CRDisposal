@@ -7,7 +7,7 @@ export const partnerSteps = [
 export const whyPartner = [
   { label: 'Professional Service', icon: 'shield' },
   { label: 'Fast Response Times', icon: 'clock' },
-  { label: 'Licensed & Insured', icon: 'shield' },
+  { label: 'Careful, Respectful Crews', icon: 'shield' },
   { label: 'Reliable Communication', icon: 'message' },
   { label: 'Transparent Pricing', icon: 'tag' },
   { label: 'Happy Clients', icon: 'star' },

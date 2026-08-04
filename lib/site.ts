@@ -5,18 +5,14 @@ export const site = {
   phoneHref: 'tel:+14842727021',
   smsHref: 'sms:+14842727021',
   email: 'crdisposalservice@gmail.com',
-  rating: 4.9,
-  reviewCount: 200,
+  // No rating/review count yet — no Google Business Profile connected and
+  // zero real reviews. Do not hardcode a number here; wire this up for
+  // real once there's an actual Google Business Profile to pull from.
   // No public street address yet — keep this null rather than showing a
   // fake one, and every consumer below should render around it being unset.
   address: null as { street: string; city: string; state: string; zip: string } | null,
   serviceArea: 'Lehigh Valley, PA',
   hours: [{ days: 'Every day', time: '24/7 — on call' }],
-  social: {
-    google: 'https://www.google.com/maps',
-    facebook: 'https://facebook.com',
-    instagram: 'https://instagram.com',
-  },
   url: 'https://www.crdisposal.com',
 };
 
@@ -28,7 +24,6 @@ export const primaryNav = [
   { label: 'Services', href: '/#services' },
   { label: 'Estimate', href: '/#estimate' },
   { label: 'About', href: '/#about' },
-  { label: 'Reviews', href: '/#reviews' },
   { label: 'Gallery', href: '/#gallery' },
   { label: 'Contact', href: '/#contact' },
   { label: 'Partners', href: '/partners' },

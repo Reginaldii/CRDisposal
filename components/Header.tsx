@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from './Logo';
 import { primaryNav, site } from '@/lib/site';
-import { MenuIcon, CloseIcon, PhoneIcon, MessageIcon, StarIcon } from './icons';
+import { MenuIcon, CloseIcon, PhoneIcon, MessageIcon } from './icons';
 
 export default function Header() {
   const pathname = usePathname();
@@ -79,10 +79,6 @@ export default function Header() {
         </nav>
 
         <div className="hidden xl:flex items-center gap-4">
-          <div className="flex items-center gap-1 text-sm font-semibold">
-            <StarIcon className="h-4 w-4 text-yellow-500" />
-            {site.rating} <span className="text-ink-400 font-normal">({site.reviewCount}+)</span>
-          </div>
           <a href={site.phoneHref} className="flex items-center gap-2 text-sm font-semibold text-ink-900 dark:text-white">
             <PhoneIcon className="h-4 w-4 text-yellow-500" />
             {site.phone}
