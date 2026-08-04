@@ -13,6 +13,7 @@ import Step5ContactSubmit from './steps/Step5ContactSubmit';
 import { ArrowRightIcon, CheckIcon, PhoneIcon } from '../icons';
 import { site } from '@/lib/site';
 import { estimateJob } from '@/lib/pricingEngine';
+import { getPublishedPrice } from '@/lib/publishedPricing';
 
 function isStepValid(step: number, data: EstimateFormData) {
   switch (step) {
@@ -84,6 +85,7 @@ export default function EstimateWizard() {
   if (submitted) {
     const estimate = estimateJob({ itemQuantities: data.itemQuantities, accessConditions: data.conditions });
     const hasEstimate = !data.skipItemList;
+    const published = hasEstimate ? getPublishedPrice(data.itemQuantities, estimate.truckFillFraction) : null;
     return (
       <div className="rounded-3xl border border-ink-900/10 bg-white p-10 text-center shadow-lift dark:border-white/10 dark:bg-ink-800 md:p-14">
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-yellow-500/15 text-yellow-600 dark:text-yellow-400">
@@ -98,18 +100,21 @@ export default function EstimateWizard() {
         </p>
 
         <div className="mx-auto mt-6 max-w-sm rounded-2xl border border-ink-900/10 bg-ink-50 p-5 text-left text-sm dark:border-white/10 dark:bg-ink-900">
-          {hasEstimate ? (
+          {hasEstimate && published ? (
             <>
               <p className="text-xs font-semibold uppercase tracking-[0.1em] text-ink-400">
-                Your Estimated Price
+                Starting At
               </p>
-              <p className="mt-1 text-ink-500 dark:text-ink-300">Most jobs like yours cost</p>
               <p className="mt-1 font-display text-3xl font-extrabold tracking-tight">
-                ${estimate.priceLow} – ${estimate.priceHigh}
+                ${published.low}
+              </p>
+              <p className="mt-1 text-ink-500 dark:text-ink-300">
+                Typical range: ${published.low} – ${published.high}
               </p>
               <p className="mt-3 text-ink-500 dark:text-ink-300">
-                This is not your final guaranteed quote — every estimate is personally reviewed
-                before pricing is finalized.
+                Final price depends on travel, stairs, and disposal — every estimate is
+                personally reviewed before it&apos;s final. Fair pricing, fast response, no
+                surprises.
               </p>
             </>
           ) : (

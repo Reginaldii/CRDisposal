@@ -2,6 +2,7 @@ import { EstimateFormData } from '../types';
 import { contactPreferences } from '@/lib/estimate';
 import { findItem } from '@/lib/items';
 import { estimateJob } from '@/lib/pricingEngine';
+import { getPublishedPrice } from '@/lib/publishedPricing';
 import { CheckIcon } from '../../icons';
 
 export default function Step5ContactSubmit({
@@ -20,6 +21,7 @@ export default function Step5ContactSubmit({
 
   const estimate = estimateJob({ itemQuantities: data.itemQuantities, accessConditions: data.conditions });
   const hasEstimate = !data.skipItemList;
+  const published = hasEstimate ? getPublishedPrice(data.itemQuantities, estimate.truckFillFraction) : null;
 
   return (
     <div className="space-y-6">
@@ -92,27 +94,33 @@ export default function Step5ContactSubmit({
         </p>
 
         <div className="mt-4 border-t border-ink-900/10 pt-4 dark:border-white/10">
-          {hasEstimate ? (
+          {hasEstimate && published ? (
             <>
               <p className="text-xs font-semibold uppercase tracking-[0.1em] text-ink-400">
-                Your Estimated Price
+                Starting At
               </p>
-              <p className="mt-1 text-ink-500 dark:text-ink-300">Most jobs like yours cost</p>
-              <p className="mt-1 font-display text-3xl font-extrabold tracking-tight">
-                ${estimate.priceLow} – ${estimate.priceHigh}
+              <p className="mt-1 font-display text-4xl font-extrabold tracking-tight">
+                ${published.low}
+              </p>
+              <p className="mt-1 text-ink-500 dark:text-ink-300">
+                Typical range for a job like this: ${published.low} – ${published.high}
+              </p>
+              <p className="mt-3 text-ink-500 dark:text-ink-300">
+                Final price depends on travel, stairs, and disposal — every estimate is
+                personally reviewed before it&apos;s final.
               </p>
               <ul className="mt-3 space-y-1.5 text-ink-500 dark:text-ink-300">
                 <li className="flex items-center gap-1.5">
                   <CheckIcon className="h-3.5 w-3.5 shrink-0 text-yellow-600 dark:text-yellow-400" />
-                  Based on your item list
+                  Fair pricing
                 </li>
                 <li className="flex items-center gap-1.5">
                   <CheckIcon className="h-3.5 w-3.5 shrink-0 text-yellow-600 dark:text-yellow-400" />
-                  Based on access conditions (stairs, carry distance, etc.)
+                  Fast response
                 </li>
                 <li className="flex items-center gap-1.5">
                   <CheckIcon className="h-3.5 w-3.5 shrink-0 text-yellow-600 dark:text-yellow-400" />
-                  Final quote personally reviewed before approval
+                  No surprises
                 </li>
               </ul>
             </>
