@@ -15,19 +15,24 @@
 // to stay competitive for a new business building its customer base, at
 // the cost of thinner margin on a small job that doesn't end up bundled.
 export const pricingConfig = {
-  // Minimum charge for any job, regardless of how small. Mostly a floor
-  // for degenerate cases — coreCost normally exceeds it on its own.
-  minimumCharge: 175,
+  // Minimum charge for any job, regardless of how small. A true floor for
+  // degenerate cases only — coreCost normally exceeds it on its own, and
+  // it deliberately does NOT also clamp priceLow (see lib/pricingEngine.ts)
+  // so a competitive low end can actually show through instead of getting
+  // silently overridden back up to this number.
+  minimumCharge: 99,
 
   // The displayed range is the calculated price times these two
-  // multipliers (e.g. a $300 calculated price shows as "$240 - $345").
+  // multipliers (e.g. a $200 calculated price shows as "$160 - $250").
   // low is intentionally more aggressive than high — the low end is what
   // customers compare against competitors' advertised "starting at"
   // prices, while the high end still needs to cover a harder version of
-  // the same job (stairs, a heavier item, etc.). The final number is
-  // always personally reviewed before it's real, so this is a marketing
-  // lever, not a promise to actually do every job at the bottom of it.
-  rangeSpread: { low: 0.8, high: 1.15 },
+  // the same job (stairs, a heavier item, etc.) and keep the midpoint
+  // (priceMid, roughly what most jobs actually settle at after review)
+  // solidly above real cost. The final number is always personally
+  // reviewed before it's real, so a low low end is a marketing lever, not
+  // a promise to actually do every job at the bottom of the range.
+  rangeSpread: { low: 0.8, high: 1.25 },
 
   // Our dump truck's approximate usable volume and safe payload weight.
   // Used only to compute the internal "how full is the truck" label for

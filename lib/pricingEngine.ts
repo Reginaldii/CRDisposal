@@ -124,9 +124,12 @@ export function estimateJob({
   }
 
   const coreCost = laborCost + disposalFee + fuelFee + overheadFee;
+  // minimumCharge floors basePrice here — it should NOT also re-floor
+  // priceLow below, or a competitive low end (rangeSpread.low) just gets
+  // silently overridden back up to minimumCharge for every small job.
   const basePrice = Math.max(pricingConfig.minimumCharge, coreCost) * (1 + conditionMultiplier) + conditionFlatAdd;
 
-  const priceLow = Math.max(pricingConfig.minimumCharge, round10(basePrice * pricingConfig.rangeSpread.low));
+  const priceLow = round10(basePrice * pricingConfig.rangeSpread.low);
   const priceHigh = Math.max(priceLow + 10, round10(basePrice * pricingConfig.rangeSpread.high));
   const priceMid = round10((priceLow + priceHigh) / 2);
 
