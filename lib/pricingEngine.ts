@@ -83,11 +83,17 @@ export function estimateJob({
   const laborCost = laborHours * pricingConfig.laborRatePerHour;
 
   // Billed by real weight, matching Berky's actual step-function fee
-  // schedule — NOT a smooth per-cubic-yard rate. A single light item
-  // costs the same minimum as anything else under disposalFeeMinimumLbs.
+  // schedule — NOT a smooth per-cubic-yard rate. Jobs under the 1,000 lb
+  // line are assumed to get combined with other small jobs before a dump
+  // run, so they only pay a share of the $108 minimum (see
+  // smallLoadDisposalDivisor); anything heavier pays the real per-ton
+  // cost in full.
   const extraLbs = Math.max(0, weightLbs - pricingConfig.disposalFeeMinimumLbs);
   const extraTons = Math.ceil(extraLbs / pricingConfig.disposalFeeTonLbs);
-  const disposalFee = pricingConfig.disposalFeeMinimum + extraTons * pricingConfig.disposalFeePerAdditionalTon;
+  const disposalFee =
+    extraTons > 0
+      ? pricingConfig.disposalFeeMinimum + extraTons * pricingConfig.disposalFeePerAdditionalTon
+      : pricingConfig.disposalFeeMinimum / pricingConfig.smallLoadDisposalDivisor;
 
   const fuelFee = fuelCostOverride ?? pricingConfig.fuelFlatFee;
   const overheadFee = pricingConfig.overheadPerJob;
