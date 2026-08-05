@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EstimateFormData, initialEstimateData, MIN_PHOTOS, TOTAL_STEPS } from './types';
@@ -44,11 +44,28 @@ export default function EstimateWizard() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
+  const cardTopRef = useRef<HTMLDivElement>(null);
+  const skipNextScroll = useRef(true);
 
   useEffect(() => {
     const ref = searchParams.get('ref');
     if (ref) setData((d) => ({ ...d, referralCode: ref }));
   }, [searchParams]);
+
+  // Each step (and the final success screen) is a different height, so the
+  // browser doesn't re-anchor scroll position on its own — going from a
+  // tall step to a short one can leave the viewport scrolled past where the
+  // card now ends, making it look like the whole wizard disappeared on
+  // mobile. Re-anchor to the top of the card on every step change instead.
+  // Skips the very first render so landing on the page doesn't fight
+  // whatever scroll position got the customer here.
+  useEffect(() => {
+    if (skipNextScroll.current) {
+      skipNextScroll.current = false;
+      return;
+    }
+    cardTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [step, submitted]);
 
   function update(patch: Partial<EstimateFormData>) {
     setData((d) => ({ ...d, ...patch }));
@@ -87,7 +104,10 @@ export default function EstimateWizard() {
     const hasEstimate = !data.skipItemList;
     const published = hasEstimate ? getPublishedPrice(data.itemQuantities, estimate.truckFillFraction) : null;
     return (
-      <div className="rounded-3xl border border-ink-900/10 bg-white p-10 text-center shadow-lift dark:border-white/10 dark:bg-ink-800 md:p-14">
+      <div
+        ref={cardTopRef}
+        className="scroll-mt-24 rounded-3xl border border-ink-900/10 bg-white p-10 text-center shadow-lift dark:border-white/10 dark:bg-ink-800 md:p-14"
+      >
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-yellow-500/15 text-yellow-600 dark:text-yellow-400">
           <CheckIcon className="h-7 w-7" />
         </div>
@@ -144,7 +164,10 @@ export default function EstimateWizard() {
   const valid = isStepValid(step, data);
 
   return (
-    <div className="rounded-3xl border border-ink-900/10 bg-white p-6 shadow-lift dark:border-white/10 dark:bg-ink-800 sm:p-8 md:p-10">
+    <div
+      ref={cardTopRef}
+      className="scroll-mt-24 rounded-3xl border border-ink-900/10 bg-white p-6 shadow-lift dark:border-white/10 dark:bg-ink-800 sm:p-8 md:p-10"
+    >
       <StepIndicator step={step} />
 
       <div className="mt-8 min-h-[300px]">
