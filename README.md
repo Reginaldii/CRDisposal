@@ -114,11 +114,14 @@ the internal notification email/sheet exactly as before — the published price 
 estimate are computed independently and both land in your inbox, so you always know if a job's
 real cost is running ahead of what was quoted.
 
-**Three items (Chair, Box Spring, Grill) are priced below their real standalone cost on purpose** —
-see the comment at the top of `lib/publishedPricing.ts`. The assumption is that these are almost
-always an add-on to a bigger job, not a solo trip. If you start getting a lot of true one-off calls
-for just one of these three, that assumption is wrong for that item and it should come up to match
-the other seven (real cost + margin, the same way they're already priced).
+**All 10 headline items are priced to win the call, not to individually clear real cost** — most of
+them sit below `lib/pricingEngine.ts`'s real cost floor (see the comment at the top of
+`lib/publishedPricing.ts` for the full reasoning and sourcing). That's intentional: these are the
+owner's own researched numbers, matched against real local competitors. The margin-risk flag below
+is what protects profitability instead — not raising the advertised price. Don't quietly raise
+these to close the cost gap without being asked; if margin becomes a real problem, the fix is
+tightening `smallLoadDisposalDivisor`/`overheadPerJob` in `lib/pricingConfig.ts` (lowers real cost)
+or reviewing individual flagged jobs, not inflating what's advertised here.
 
 **Margin risk flag:** every submission compares the published low end against
 `estimate.basePrice` (the real cost-model price, including access-condition surcharges like

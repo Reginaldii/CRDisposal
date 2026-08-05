@@ -15,20 +15,24 @@
 //      how much of the truck the job fills.
 //
 // Reviewed 2026-08 against RJC Junk Solutions, Premier Junk Removal,
-// College HUNKS, and 1-800-GOT-JUNK's published/researched pricing for
-// the Lehigh Valley, cross-checked against lib/pricingEngine.ts's real
-// cost floor for each item so nothing here is priced below what it
-// actually costs to do the job — except where noted below.
-//
-// Deliberate choice: Chair, Box Spring, and Grill are priced BELOW their
-// real standalone cost floor (~$160-175, see lib/pricingEngine.ts) on
-// purpose. In practice these are almost never a standalone trip — they
-// ride along with something bigger — so they're priced as "add it on"
-// items, not as jobs meant to be booked alone. If you start getting a lot
-// of true one-off calls for just a chair/box spring/grill, that
-// assumption is wrong and these three should come up to match the rest
-// of the table (use the same real-cost-plus-margin approach the other
-// seven items already follow).
+// College HUNKS, 1-800-GOT-JUNK, Just Junk It Removal, Berks Junk
+// Removal, and Lehigh Valley Top Junk's published/researched pricing for
+// the Lehigh Valley, plus Google's own AI-overview data for mattress
+// removal specifically ($65-130 average in the Breinigsville/Allentown
+// area). These are the owner's own proposed numbers, used as-is — a
+// previous revision raised 7 of these 10 back up to match
+// lib/pricingEngine.ts's real cost floor (~$160-290 depending on the
+// item), which defeated the entire point of publishing a competitive
+// price and undercut the exact Google data that started this. Every
+// item below is priced to win the phone call, not to individually clear
+// real cost — that's what the margin-risk flag in app/api/estimate/
+// route.ts is for (it compares every submission's published price
+// against the real cost model and flags jobs that need a human look
+// before the final price is confirmed). Don't raise these again without
+// being asked — if margin becomes a real problem, the fix is tightening
+// smallLoadDisposalDivisor/overheadPerJob in lib/pricingConfig.ts (which
+// lowers real cost) or reviewing which jobs actually need a bump after
+// personal review, not quietly inflating what's advertised here.
 export type HeadlineItem = {
   key: string;
   label: string;
@@ -42,18 +46,18 @@ export const headlineItems: HeadlineItem[] = [
   { key: 'chair', label: 'Chair', itemIds: ['chair'], low: 69, high: 89 },
   { key: 'box-spring', label: 'Box Spring', itemIds: ['box-spring'], low: 49, high: 69 },
   { key: 'grill', label: 'Grill', itemIds: ['grill'], low: 69, high: 99 },
-  { key: 'recliner', label: 'Recliner', itemIds: ['recliner'], low: 189, high: 249 },
-  { key: 'mattress', label: 'Mattress', itemIds: ['mattress'], low: 179, high: 239 },
-  { key: 'dresser', label: 'Dresser', itemIds: ['dresser', 'cabinet'], low: 199, high: 259 },
-  { key: 'couch', label: 'Couch / Loveseat', itemIds: ['sofa', 'loveseat', 'sectional'], low: 189, high: 249 },
-  { key: 'washer-dryer', label: 'Washer / Dryer', itemIds: ['washer', 'dryer'], low: 209, high: 269 },
-  { key: 'refrigerator', label: 'Refrigerator', itemIds: ['refrigerator', 'freezer'], low: 229, high: 289 },
+  { key: 'recliner', label: 'Recliner', itemIds: ['recliner'], low: 79, high: 109 },
+  { key: 'mattress', label: 'Mattress', itemIds: ['mattress'], low: 89, high: 119 },
+  { key: 'dresser', label: 'Dresser', itemIds: ['dresser', 'cabinet'], low: 79, high: 119 },
+  { key: 'couch', label: 'Couch / Loveseat', itemIds: ['sofa', 'loveseat', 'sectional'], low: 99, high: 149 },
+  { key: 'washer-dryer', label: 'Washer / Dryer', itemIds: ['washer', 'dryer'], low: 99, high: 149 },
+  { key: 'refrigerator', label: 'Refrigerator', itemIds: ['refrigerator', 'freezer'], low: 109, high: 169 },
   {
     key: 'exercise',
     label: 'Exercise Equipment',
     itemIds: ['treadmill', 'elliptical', 'weight-bench', 'exercise-bike'],
-    low: 209,
-    high: 269,
+    low: 99,
+    high: 199,
   },
 ];
 
