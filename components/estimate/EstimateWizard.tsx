@@ -59,12 +59,24 @@ export default function EstimateWizard() {
   // mobile. Re-anchor to the top of the card on every step change instead.
   // Skips the very first render so landing on the page doesn't fight
   // whatever scroll position got the customer here.
+  //
+  // The delay matters: the step transition below animates for 250ms, so
+  // the page is still actively resizing when the step number first
+  // changes. Calling scrollIntoView immediately races a smooth scroll
+  // against that resize — the target position keeps moving mid-animation,
+  // which is what was causing the scroll to badly overshoot (landing
+  // sections below the whole estimate card instead of at its top).
+  // Waiting until the transition has settled lets it scroll against a
+  // stable layout.
   useEffect(() => {
     if (skipNextScroll.current) {
       skipNextScroll.current = false;
       return;
     }
-    cardTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const id = setTimeout(() => {
+      cardTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
+    return () => clearTimeout(id);
   }, [step, submitted]);
 
   function update(patch: Partial<EstimateFormData>) {
