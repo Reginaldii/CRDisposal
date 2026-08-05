@@ -1,6 +1,11 @@
 import { TOTAL_STEPS } from './types';
 
-const STEP_LABELS = ['Items', 'Location', 'Photos', 'Timing', 'Contact'];
+// "Location" (vs. Items/Photos/Timing/Contact) was long enough that
+// "Location ✓" wrapped onto two lines once the checkmark was added,
+// while the shorter labels stayed on one line — "Where" matches the
+// others' length and reads fine paired with Step 2's own heading
+// ("Where are the items?").
+const STEP_LABELS = ['Items', 'Where', 'Photos', 'Timing', 'Contact'];
 
 export default function StepIndicator({ step }: { step: number }) {
   return (
@@ -13,7 +18,7 @@ export default function StepIndicator({ step }: { step: number }) {
           return (
             <span
               key={label}
-              className={`flex-1 text-center text-[11px] font-semibold ${
+              className={`flex-1 whitespace-nowrap text-center text-[11px] font-semibold ${
                 current
                   ? 'text-yellow-600 dark:text-yellow-400'
                   : done
