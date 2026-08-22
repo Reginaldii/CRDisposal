@@ -17,7 +17,7 @@ const jobTypes = [
 ];
 
 export default function LeadForm() {
-  const [form, setForm] = useState({ name: '', phone: '', email: '', zip: '', jobType: '', timeframe: '', description: '' });
+  const [form, setForm] = useState({ name: '', phone: '', email: '', zip: '', jobType: '', preferredDate: '', alternateDate: '', description: '' });
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [status, setStatus] = useState<'idle' | 'processing' | 'submitting' | 'success' | 'error'>('idle');
 
@@ -75,7 +75,8 @@ export default function LeadForm() {
             <option value="">Choose one</option>{jobTypes.map((type) => <option key={type}>{type}</option>)}
           </select>
         </label>
-        <label className="text-sm font-semibold sm:col-span-2">When do you need it done? <span className="font-normal text-ink-400">(optional)</span><input className={`${fieldClass} mt-2`} placeholder="Example: this week, by August 30, flexible" value={form.timeframe} onChange={(e) => setForm({ ...form, timeframe: e.target.value })} /></label>
+        <label className="text-sm font-semibold">Preferred date<input required type="date" min={new Date().toISOString().split('T')[0]} className={`${fieldClass} mt-2`} value={form.preferredDate} onChange={(e) => setForm({ ...form, preferredDate: e.target.value })} /></label>
+        <label className="text-sm font-semibold">Alternate date <span className="font-normal text-ink-400">(optional)</span><input type="date" min={form.preferredDate || new Date().toISOString().split('T')[0]} className={`${fieldClass} mt-2`} value={form.alternateDate} onChange={(e) => setForm({ ...form, alternateDate: e.target.value })} /></label>
         <label className="text-sm font-semibold sm:col-span-2">Tell us what needs to be removed<textarea required rows={5} className={`${fieldClass} mt-2 resize-y`} placeholder="Describe the amount, where it is located, stairs or access details, and anything unusually heavy." value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></label>
         <label className="text-sm font-semibold sm:col-span-2">Add photos <span className="font-normal text-ink-400">(optional, up to 4)</span><input type="file" accept="image/*" multiple className={`${fieldClass} mt-2 file:mr-4 file:rounded-full file:border-0 file:bg-yellow-500 file:px-4 file:py-2 file:font-semibold`} onChange={(e) => addPhotos(e.target.files)} /></label>
       </div>
