@@ -15,7 +15,7 @@ export default function CommercialSection() {
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <a href="#estimate" className="btn-primary">Discuss a Project</a>
-            <a href={site.phoneHref} className="btn-outline border-white/25 text-white hover:border-white/60">
+            <a href={site.phoneHref} className="btn border border-white/30 bg-white/10 text-white hover:border-white/60 hover:bg-white/15">
               <PhoneIcon className="h-4 w-4" /> Call {site.phone}
             </a>
           </div>
