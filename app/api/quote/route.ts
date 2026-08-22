@@ -7,8 +7,8 @@ type Photo = { dataUrl: string; name: string };
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, phone, email, zip, jobType, timeframe, description, photos = [] } = body ?? {};
-    if (!name || !phone || !zip || !jobType || !description) {
+    const { name, phone, email, zip, jobType, preferredDate, alternateDate, description, photos = [] } = body ?? {};
+    if (!name || !phone || !zip || !jobType || !preferredDate || !description) {
       return NextResponse.json({ error: 'Missing required fields.' }, { status: 400 });
     }
     const safePhotos = (photos as Photo[]).slice(0, 4);
@@ -18,7 +18,8 @@ export async function POST(req: NextRequest) {
       `Email: ${email || '—'}`,
       `ZIP: ${zip}`,
       `Job type: ${jobType}`,
-      `Timeframe: ${timeframe || 'Flexible / not provided'}`,
+      `Preferred date: ${preferredDate}`,
+      `Alternate date: ${alternateDate || '—'}`,
       `Photos: ${safePhotos.length}`,
       '',
       'Job description:',
@@ -31,7 +32,7 @@ export async function POST(req: NextRequest) {
     }));
     const [sent] = await Promise.all([
       sendNotificationEmail({ subject: `New ${jobType} estimate request from ${name}`, text, attachments }),
-      appendToSheet({ type: 'Estimate', name, phone, email: email || '', zip, items: jobType, preferredDate: timeframe || '', notes: description, photoCount: safePhotos.length }),
+      appendToSheet({ type: 'Estimate', name, phone, email: email || '', zip, items: jobType, preferredDate: alternateDate ? `${preferredDate} (alternate: ${alternateDate})` : preferredDate, notes: description, photoCount: safePhotos.length }),
     ]);
     if (!sent) console.log('New estimate request (email not configured):', text);
     return NextResponse.json({ ok: true });
