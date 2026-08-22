@@ -65,7 +65,7 @@ export default function Hero() {
                 <PhoneIcon className="h-4 w-4" />
                 Call {site.phone}
               </a>
-              <a href={site.smsHref} className="btn-outline border-white/25 text-white hover:border-white/60 text-base">
+              <a href={site.smsHref} className="btn border border-white/30 bg-white/10 text-base text-white hover:border-white/60 hover:bg-white/15">
                 <MessageIcon className="h-4 w-4" />
                 Text Photos
               </a>
