@@ -12,7 +12,7 @@ export const site = {
   // fake one, and every consumer below should render around it being unset.
   address: null as { street: string; city: string; state: string; zip: string } | null,
   serviceArea: 'Lehigh Valley, PA',
-  url: 'https://www.crdisposal.com',
+  url: 'https://www.crdisposal.net',
 };
 
 // Prefixed with "/" so these still work correctly from pages other than
