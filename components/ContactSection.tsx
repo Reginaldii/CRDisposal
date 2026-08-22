@@ -1,6 +1,6 @@
 import ContactForm from './ContactForm';
 import { site } from '@/lib/site';
-import { PhoneIcon, MailIcon, MapPinIcon, ClockIcon } from './icons';
+import { PhoneIcon, MailIcon, MapPinIcon } from './icons';
 
 export default function ContactSection() {
   return (
@@ -39,19 +39,6 @@ export default function ContactSection() {
                       ? `${site.address.street}, ${site.address.city}, ${site.address.state} ${site.address.zip}`
                       : site.serviceArea}
                   </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4 rounded-2xl border border-ink-900/10 bg-white p-6 dark:border-white/10 dark:bg-ink-900">
-                <ClockIcon className="mt-0.5 h-6 w-6 shrink-0 text-yellow-500" />
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">Hours</p>
-                  <div className="mt-1.5 space-y-1">
-                    {site.hours.map((h) => (
-                      <p key={h.days} className="text-sm text-ink-600 dark:text-ink-200">
-                        <span className="font-semibold">{h.days}:</span> {h.time}
-                      </p>
-                    ))}
-                  </div>
                 </div>
               </div>
             </div>

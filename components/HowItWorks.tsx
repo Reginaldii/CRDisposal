@@ -7,7 +7,7 @@ export default function HowItWorks() {
         <div className="max-w-2xl">
           <p className="eyebrow">How It Works</p>
           <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl">
-            Three steps. Junk gone.
+            A straightforward process.
           </h2>
         </div>
 

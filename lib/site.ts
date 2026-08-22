@@ -1,6 +1,6 @@
 export const site = {
   name: 'CR Disposal',
-  tagline: 'Junk Gone Today.',
+  tagline: 'Cleanouts. Debris. Hauling.',
   phone: '(484) 272-7021',
   phoneHref: 'tel:+14842727021',
   smsHref: 'sms:+14842727021',
@@ -12,7 +12,6 @@ export const site = {
   // fake one, and every consumer below should render around it being unset.
   address: null as { street: string; city: string; state: string; zip: string } | null,
   serviceArea: 'Lehigh Valley, PA',
-  hours: [{ days: 'Every day', time: '24/7 — on call' }],
   url: 'https://www.crdisposal.com',
 };
 
@@ -22,9 +21,8 @@ export const site = {
 export const primaryNav = [
   { label: 'Home', href: '/#home' },
   { label: 'Services', href: '/#services' },
-  { label: 'Estimate', href: '/#estimate' },
+  { label: 'Commercial', href: '/#commercial' },
   { label: 'About', href: '/#about' },
-  { label: 'Gallery', href: '/#gallery' },
-  { label: 'Contact', href: '/#contact' },
-  { label: 'Partners', href: '/partners' },
+  { label: 'Service Area', href: '/#service-area' },
+  { label: 'Get an Estimate', href: '/#estimate' },
 ];

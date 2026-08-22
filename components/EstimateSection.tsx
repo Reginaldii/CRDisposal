@@ -1,8 +1,7 @@
-import { Suspense } from 'react';
-import EstimateWizard from './estimate/EstimateWizard';
+import LeadForm from './LeadForm';
 import { CheckIcon } from './icons';
 
-const points = ['Free Estimates', 'Upfront Pricing', 'No Hidden Fees', 'Pay Only For What We Remove'];
+const points = ['Short request form', 'Photos help us price accurately', 'Every job reviewed personally'];
 
 export default function EstimateSection() {
   return (
@@ -11,8 +10,9 @@ export default function EstimateSection() {
         <div className="mx-auto max-w-2xl text-center">
           <p className="eyebrow">Free Estimate</p>
           <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl">
-            From &ldquo;I have junk&rdquo; to booked in under two minutes.
+            Show us the job. Get a real estimate.
           </h2>
+          <p className="mt-5 text-lg leading-relaxed text-ink-500 dark:text-ink-300">Tell us what you need cleared and include photos if you can. We&apos;ll review the size, access, location, and timing before confirming pricing.</p>
           <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-ink-500 dark:text-ink-300">
             {points.map((p) => (
               <li key={p} className="flex items-center gap-1.5">
@@ -24,9 +24,7 @@ export default function EstimateSection() {
         </div>
 
         <div className="mx-auto mt-12 max-w-2xl">
-          <Suspense fallback={<div className="h-[520px] animate-pulse rounded-3xl bg-white/60 dark:bg-ink-900/60" />}>
-            <EstimateWizard />
-          </Suspense>
+          <LeadForm />
         </div>
       </div>
     </section>

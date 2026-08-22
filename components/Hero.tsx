@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { site } from '@/lib/site';
-import { PhoneIcon, MessageIcon, CalendarIcon, MapPinIcon } from './icons';
+import { PhoneIcon, MessageIcon, CalendarIcon, MapPinIcon, CheckIcon } from './icons';
 
 export default function Hero() {
   return (
@@ -42,7 +42,7 @@ export default function Hero() {
               transition={{ duration: 0.7, delay: 0.05 }}
               className="mt-6 font-display text-5xl font-extrabold leading-[1.02] tracking-tightest sm:text-6xl md:text-7xl"
             >
-              Junk Gone <span className="text-yellow-500">Today.</span>
+              Clear the space.<br /><span className="text-yellow-500">Keep moving.</span>
             </motion.h1>
 
             <motion.p
@@ -51,8 +51,8 @@ export default function Hero() {
               transition={{ duration: 0.7, delay: 0.15 }}
               className="mt-6 max-w-xl text-lg leading-relaxed text-ink-200 md:text-xl"
             >
-              Fast. Affordable. Locally owned. Point at what needs to go — we do the lifting,
-              loading, and disposal. Most estimates take under two minutes.
+              Full-service cleanouts, debris removal, and dependable hauling for homeowners,
+              landlords, property managers, and contractors across the Lehigh Valley.
             </motion.p>
 
             <motion.div
@@ -63,7 +63,7 @@ export default function Hero() {
             >
               <a href={site.phoneHref} className="btn-primary text-base">
                 <PhoneIcon className="h-4 w-4" />
-                Call Now
+                Call {site.phone}
               </a>
               <a href={site.smsHref} className="btn-outline border-white/25 text-white hover:border-white/60 text-base">
                 <MessageIcon className="h-4 w-4" />
@@ -71,21 +71,22 @@ export default function Hero() {
               </a>
               <a href="#estimate" className="btn bg-white text-ink-900 shadow-soft hover:bg-ink-100 hover:shadow-lift text-base">
                 <CalendarIcon className="h-4 w-4" />
-                Get Free Estimate
+                Request an Estimate
               </a>
             </motion.div>
 
-            <motion.p
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.7, delay: 0.35 }}
-              className="mt-8 text-sm text-ink-300"
+              className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-sm text-ink-200"
             >
-              <a href={site.phoneHref} className="font-semibold text-white underline decoration-yellow-500/60 underline-offset-4">
-                {site.phone}
-              </a>{' '}
-              — available every day, most jobs booked same day.
-            </motion.p>
+              {['Locally owned', 'Photo estimates', 'Residential & commercial'].map((item) => (
+                <span key={item} className="flex items-center gap-1.5">
+                  <CheckIcon className="h-4 w-4 text-yellow-500" /> {item}
+                </span>
+              ))}
+            </motion.div>
           </div>
 
           {/* Brand mark fills the empty right-hand space on wide screens only —

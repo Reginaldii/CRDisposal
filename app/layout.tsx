@@ -12,11 +12,11 @@ const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope', displa
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: 'CR Disposal | Junk Gone Today — Lehigh Valley, PA',
+    default: 'CR Disposal | Cleanouts, Debris Removal & Hauling — Lehigh Valley, PA',
     template: '%s | CR Disposal',
   },
   description:
-    'Fast, affordable, locally owned junk removal in the Lehigh Valley. Same-day service, upfront pricing, free estimates. Furniture, appliances, cleanouts, construction debris, and more.',
+    'Locally owned cleanouts, debris removal, and hauling for homeowners, landlords, property managers, and contractors in the Lehigh Valley.',
   keywords: [
     'junk removal Lehigh Valley',
     'junk removal Allentown',
@@ -31,15 +31,15 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: site.url,
     siteName: 'CR Disposal',
-    title: 'CR Disposal | Junk Gone Today',
+    title: 'CR Disposal | Cleanouts, Debris Removal & Hauling',
     description:
-      'Fast, affordable, locally owned junk removal across the Lehigh Valley, PA. Free estimates, upfront pricing.',
+      'Locally owned cleanouts, debris removal, and hauling across the Lehigh Valley, PA.',
     images: [{ url: `${site.url}/images/logo.png`, width: 1200, height: 1200, alt: 'CR Disposal' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'CR Disposal | Junk Gone Today',
-    description: 'Fast, affordable, locally owned junk removal across the Lehigh Valley, PA.',
+    title: 'CR Disposal | Cleanouts, Debris Removal & Hauling',
+    description: 'Locally owned cleanouts, debris removal, and hauling across the Lehigh Valley, PA.',
     images: [`${site.url}/images/logo.png`],
   },
   icons: {
@@ -81,14 +81,6 @@ const localBusinessSchema = {
   },
   url: site.url,
   priceRange: '$$',
-  openingHoursSpecification: [
-    {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-      opens: '00:00',
-      closes: '23:59',
-    },
-  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

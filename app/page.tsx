@@ -1,21 +1,17 @@
 import type { Metadata } from 'next';
 import Hero from '@/components/Hero';
-import TrustBar from '@/components/TrustBar';
 import EstimateSection from '@/components/EstimateSection';
 import WhyChooseUs from '@/components/WhyChooseUs';
 import ServicesGrid from '@/components/ServicesGrid';
 import HowItWorks from '@/components/HowItWorks';
-import RestrictedItemsSection from '@/components/RestrictedItemsSection';
 import AboutSection from '@/components/AboutSection';
-import Gallery from '@/components/Gallery';
 import ServiceAreaSection from '@/components/ServiceAreaSection';
-import PartnerTeaser from '@/components/PartnerTeaser';
-import ContactSection from '@/components/ContactSection';
+import CommercialSection from '@/components/CommercialSection';
 
 export const metadata: Metadata = {
-  title: 'CR Disposal | Junk Gone Today — Lehigh Valley, PA',
+  title: 'CR Disposal | Cleanouts, Debris Removal & Hauling — Lehigh Valley, PA',
   description:
-    'Fast, affordable, locally owned junk removal in the Lehigh Valley. Same-day service, upfront pricing, free estimates in under two minutes.',
+    'Locally owned cleanouts, debris removal, and hauling for homeowners, landlords, property managers, and contractors in the Lehigh Valley.',
   alternates: { canonical: '/' },
 };
 
@@ -23,17 +19,13 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <TrustBar />
-      <EstimateSection />
-      <WhyChooseUs />
       <ServicesGrid />
+      <CommercialSection />
       <HowItWorks />
-      <RestrictedItemsSection />
+      <WhyChooseUs />
+      <EstimateSection />
       <AboutSection />
-      <Gallery />
       <ServiceAreaSection />
-      <PartnerTeaser />
-      <ContactSection />
     </>
   );
 }

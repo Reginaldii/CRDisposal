@@ -12,7 +12,7 @@ export default function Footer() {
           <div className="md:col-span-4">
             <Logo />
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-ink-300">
-              Locally owned junk removal for the Lehigh Valley. Fast, affordable, upfront pricing.
+              Locally owned cleanouts, debris removal, and hauling for the Lehigh Valley.
             </p>
             <div className="mt-6 flex flex-col gap-3 text-sm text-ink-200">
               <a href={site.phoneHref} className="flex items-center gap-2.5 hover:text-yellow-400">

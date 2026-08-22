@@ -20,16 +20,16 @@ export const services: Service[] = [
 ];
 
 export const whyChooseUs = [
-  { label: 'Same Day Service', icon: 'clock' },
-  { label: 'Upfront Pricing', icon: 'tag' },
+  { label: 'Scheduling That Fits The Job', icon: 'clock' },
+  { label: 'Estimate Before Work Begins', icon: 'tag' },
   { label: 'We Do All The Heavy Lifting', icon: 'muscle' },
-  { label: 'Eco Friendly Disposal', icon: 'leaf' },
+  { label: 'Responsible Disposal', icon: 'leaf' },
   { label: 'Careful With Your Home', icon: 'shield' },
   { label: 'Locally Owned', icon: 'home' },
 ];
 
 export const howItWorks = [
-  { step: '1', title: 'Book', desc: 'Call, text, or submit a free estimate in under two minutes.' },
-  { step: '2', title: 'We Arrive', desc: 'Same-day and next-day windows, right on time.' },
-  { step: '3', title: 'Your Junk Is Gone', desc: 'We do the lifting, loading, and disposal — you do nothing.' },
+  { step: '1', title: 'Show Us The Job', desc: 'Call, text photos, or send the short estimate form below.' },
+  { step: '2', title: 'Review The Estimate', desc: 'We review the amount, access, location, and timing before confirming the job.' },
+  { step: '3', title: 'We Clear The Space', desc: 'We handle the lifting, loading, hauling, and disposal.' },
 ];

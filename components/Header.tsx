@@ -84,7 +84,7 @@ export default function Header() {
             {site.phone}
           </a>
           <Link href="/#estimate" className="btn-primary">
-            Get Free Estimate
+            Request an Estimate
           </Link>
         </div>
 
@@ -127,7 +127,7 @@ export default function Header() {
                   Text Photos
                 </a>
                 <Link href="/#estimate" onClick={() => setOpen(false)} className="btn-primary w-full">
-                  Get Free Estimate
+                  Request an Estimate
                 </Link>
               </div>
             </div>
