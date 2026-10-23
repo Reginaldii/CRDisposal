@@ -78,21 +78,30 @@ export function estimateJob({
   const truckFillFraction = effectiveCuYd / pricingConfig.truckCapacityCubicYards;
   const truckFillLabel = labelForFill(truckFillFraction);
 
-  // Jobs under the 1,000 lb line are assumed to get combined with other
-  // small jobs before a dump run — both the disposal fee AND the dump-run
-  // portion of labor time are shared across smallLoadDisposalDivisor jobs
-  // instead of charged in full to each one. Anything heavier pays both in
-  // full, since a load that size is less likely to leave room (or need)
-  // to combine with another stop.
+  // Jobs under the 1,000 lb line that ALSO leave room in the truck are
+  // assumed to get combined with other small/nearby jobs — before a dump
+  // run (smallLoadDisposalDivisor) and along a shared route
+  // (travelSharingDivisor). A job that's light but already fills most of
+  // the truck (e.g. a full load of bulky-but-light furniture) can't
+  // realistically ride along with anyone else's pickup even though it's
+  // under the weight line, so the fill-fraction check matters as much as
+  // the weight one. Anything heavier, or anything that fills the truck on
+  // its own, pays labor/disposal/fuel in full — it's a dedicated trip.
   const extraLbs = Math.max(0, weightLbs - pricingConfig.disposalFeeMinimumLbs);
   const extraTons = Math.ceil(extraLbs / pricingConfig.disposalFeeTonLbs);
-  const isBundleable = extraTons === 0;
+  const isBundleable = extraTons === 0 && truckFillFraction <= pricingConfig.bundleFillFractionMax;
 
   const dumpRunHours = isBundleable
     ? pricingConfig.dumpRunHours / pricingConfig.smallLoadDisposalDivisor
     : pricingConfig.dumpRunHours;
+  const travelHours = isBundleable
+    ? pricingConfig.travelHours / pricingConfig.travelSharingDivisor
+    : pricingConfig.travelHours;
   const laborHours =
-    pricingConfig.loadTimeHours + dumpRunHours + effectiveCuYd * pricingConfig.laborHoursPerEffectiveCubicYard;
+    pricingConfig.onSiteLoadHours +
+    travelHours +
+    dumpRunHours +
+    effectiveCuYd * pricingConfig.laborHoursPerEffectiveCubicYard;
   const laborCost = laborHours * pricingConfig.laborRatePerHour;
 
   // Billed by real weight, matching Berky's actual step-function fee
@@ -101,7 +110,10 @@ export function estimateJob({
     ? pricingConfig.disposalFeeMinimum / pricingConfig.smallLoadDisposalDivisor
     : pricingConfig.disposalFeeMinimum + extraTons * pricingConfig.disposalFeePerAdditionalTon;
 
-  const fuelFee = fuelCostOverride ?? pricingConfig.fuelFlatFee;
+  // Same sharing logic applies to fuel as to travel time — a shared route
+  // burns less fuel per job than a dedicated round trip.
+  const fuelBase = fuelCostOverride ?? pricingConfig.fuelFlatFee;
+  const fuelFee = isBundleable ? fuelBase / pricingConfig.travelSharingDivisor : fuelBase;
   const overheadFee = pricingConfig.overheadPerJob;
 
   let conditionMultiplier = 0;
