@@ -142,7 +142,18 @@ export default function HomePage() {
               <p className="mt-4 text-lg font-bold">Up to 5 days · Up to 1 ton included</p>
               <p className="mt-3 text-sm leading-relaxed text-ink-200">Local delivery and pickup included within the service area. Availability, delivery area, accepted materials, extra weight, additional days and any other charges are confirmed in your quote.</p>
             </div>
-            <p className="mt-5 text-sm leading-relaxed text-ink-300">Please ask before loading heavy debris. Weight and loading limits apply; availability is not guaranteed until confirmed.</p>
+            <div className="mt-8 border-t border-white/15 pt-6">
+              <h3 className="font-display text-xl font-extrabold">Keep these out of the dumpster</h3>
+              <ul className="mt-4 grid gap-x-6 gap-y-2 text-sm leading-relaxed text-ink-200 sm:grid-cols-2">
+                <li>• Paint, pesticides, oil &amp; liquids</li>
+                <li>• Batteries, aerosols &amp; propane tanks</li>
+                <li>• Tires &amp; fluorescent bulbs</li>
+                <li>• TVs, computers &amp; monitors</li>
+                <li>• Asbestos &amp; medical waste</li>
+                <li>• Food waste &amp; animal remains</li>
+              </ul>
+              <p className="mt-4 text-sm leading-relaxed text-ink-300">Ask us before loading appliances (especially refrigerators or AC units), mattresses, concrete, dirt, roofing, yard waste, or other questionable items. Weight and loading limits apply. Not sure? Call or text us first.</p>
+            </div>
             <div className="mt-7 flex flex-wrap gap-3"><a href={site.phoneHref} className="btn-primary">Call {site.phone}</a><a href={site.smsHref} className="btn border border-white/25 text-white hover:bg-white/10">Text us</a></div>
           </div>
           <div className="rounded-3xl bg-white p-7 text-ink-900 shadow-2xl md:p-9">
