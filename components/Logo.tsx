@@ -5,12 +5,12 @@ export default function Logo({ className = '' }: { className?: string }) {
   return (
     <Link href="/#home" className={`flex items-center gap-2.5 ${className}`} aria-label="CR Disposal home">
       <Image
-        src="/images/favicon.png"
+        src="/images/brand-light.png"
         alt="CR Disposal"
-        width={44}
-        height={44}
+        width={1200}
+        height={440}
         priority
-        className="h-9 w-9 md:h-10 md:w-10 object-contain"
+        className="h-8 w-[82px] md:h-10 md:w-[102px] object-contain"
       />
       <span className="font-display text-lg md:text-xl font-extrabold tracking-tight leading-none">
         CR <span className="text-yellow-500">DISPOSAL</span>

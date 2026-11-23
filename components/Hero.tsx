@@ -89,14 +89,6 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* Brand mark fills the empty right-hand space on wide screens only —
-              there isn't room for it without crowding the copy below xl, and it
-              would just repeat the header logo on mobile. The mark's black "C"
-              would otherwise disappear against this section's near-black
-              background, so it gets a light halo two ways: a soft blurred glow
-              behind the whole image, plus a drop-shadow that outlines the mark's
-              actual silhouette (a background glow alone isn't tight enough to
-              read against black — it just looks washed out). */}
           <motion.div
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -105,10 +97,10 @@ export default function Hero() {
           >
             <div className="absolute h-[560px] w-[560px] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.14),transparent_65%)] blur-2xl 2xl:h-[680px] 2xl:w-[680px]" />
             <Image
-              src="/images/logo.png"
+              src="/images/brand-dark.png"
               alt="CR Disposal"
-              width={1024}
-              height={1024}
+              width={1200}
+              height={440}
               className="relative h-auto w-[440px] object-contain 2xl:w-[540px]"
               style={{
                 filter:

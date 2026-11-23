@@ -89,10 +89,10 @@ export default function HomePage() {
             <div className="absolute -inset-8 rounded-full bg-yellow-500/10 blur-3xl" />
             <div className="relative overflow-hidden rounded-[2rem] border border-white/12 bg-white p-7 shadow-2xl md:p-9">
               <Image
-                src="/images/favicon.png"
+                src="/images/brand-light.png"
                 alt="CR Disposal logo"
-                width={512}
-                height={512}
+                width={1200}
+                height={440}
                 className="mx-auto h-auto w-full max-w-[360px] object-contain"
                 priority
               />

@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     title: 'CR Disposal | Cleanouts, Debris Removal & Hauling',
     description:
       'Locally owned cleanouts, debris removal, and hauling across the Lehigh Valley, PA.',
-    images: [{ url: `${site.url}/images/logo.png`, width: 1200, height: 1200, alt: 'CR Disposal' }],
+    images: [{ url: `${site.url}/images/logo.png`, width: 1200, height: 630, alt: 'CR Disposal' }],
   },
   twitter: {
     card: 'summary_large_image',
