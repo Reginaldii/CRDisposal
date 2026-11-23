@@ -18,6 +18,7 @@ const services = [
   'Renovation debris',
   'Rental turnovers',
   'Site cleanup',
+  '16-yard dumpster rental',
 ];
 
 export default function HomePage() {
@@ -63,6 +64,8 @@ export default function HomePage() {
                 Call {site.phone}
               </a>
             </div>
+
+            <a href="#dumpster-rental" className="mt-5 inline-flex font-bold text-yellow-400 underline decoration-yellow-500 underline-offset-4">Explore 16-yard dumpster rentals →</a>
 
             <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-ink-200">
               {['We load it', 'We haul it', 'You get your space back'].map((item) => (
@@ -124,6 +127,33 @@ export default function HomePage() {
             <span>Local owner-operated service</span>
             <span>{site.phone}</span>
             <span>crdisposal.net</span>
+          </div>
+        </div>
+      </section>
+      <section id="dumpster-rental" className="scroll-mt-20 border-t border-white/10 bg-ink-900 py-16 md:py-24">
+        <div className="container-x grid items-start gap-10 lg:grid-cols-2 lg:gap-16">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-yellow-500">Dumpster rental · Berks County + Lehigh Valley</p>
+            <h2 className="mt-4 font-display text-4xl font-black tracking-tight md:text-5xl">16-yard dumpster rental</h2>
+            <p className="mt-5 text-lg leading-relaxed text-ink-200">You fill it. We deliver it and haul it away. A convenient option for cleanouts and renovation debris.</p>
+            <div className="mt-8 rounded-3xl border border-yellow-500/30 bg-white/[0.06] p-6 md:p-8">
+              <p className="text-sm font-bold uppercase tracking-[0.14em] text-yellow-500">Introductory offer</p>
+              <p className="mt-2 text-5xl font-black">$399 <span className="text-base font-medium text-ink-300">per rental</span></p>
+              <p className="mt-4 text-lg font-bold">Up to 5 days · Up to 1 ton included</p>
+              <p className="mt-3 text-sm leading-relaxed text-ink-200">Local delivery and pickup included within the service area. Availability, delivery area, accepted materials, extra weight, additional days and any other charges are confirmed in your quote.</p>
+            </div>
+            <p className="mt-5 text-sm leading-relaxed text-ink-300">Please ask before loading heavy debris. Weight and loading limits apply; availability is not guaranteed until confirmed.</p>
+            <div className="mt-7 flex flex-wrap gap-3"><a href={site.phoneHref} className="btn-primary">Call {site.phone}</a><a href={site.smsHref} className="btn border border-white/25 text-white hover:bg-white/10">Text us</a></div>
+          </div>
+          <div className="rounded-3xl bg-white p-7 text-ink-900 shadow-2xl md:p-9">
+            <h3 className="font-display text-2xl font-extrabold">Get a rental quote</h3>
+            <p className="mt-3 leading-relaxed text-ink-600">Tell us your delivery location, preferred date, and what you&apos;re throwing away. We&apos;ll confirm availability and your price.</p>
+            <div className="mt-6 grid gap-3">
+              <a href={site.phoneHref} className="btn-primary w-full">Call {site.phone}</a>
+              <a href={site.smsHref} className="btn border border-ink-900/20 text-ink-900 hover:bg-ink-50">Text us</a>
+              <a href={`mailto:${site.email}?subject=${encodeURIComponent('16-yard dumpster rental inquiry')}`} className="btn border border-ink-900/20 text-ink-900 hover:bg-ink-50">Email us</a>
+            </div>
+            <p className="mt-5 text-sm text-ink-600">No reservation is made until we confirm your rental.</p>
           </div>
         </div>
       </section>
